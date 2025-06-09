@@ -1,0 +1,88 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+}
+
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    background-color: #2f3e46;
+    color: white;
+}
+
+.sidebar h2 {
+    margin-bottom: 20px;
+    padding-left: 5px;
+}
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 15px;
+}
+
+.main-content {
+    flex: 1;
+}
+
+.dashboard-stats {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 15px;
+    padding: 20px 10px;
+}
+
+.stat-card {
+    background: rgb(85, 229, 85);
+    padding: 15px 20px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+.chart-section {
+    padding: 0 20px;
+}
+
+.chart-section img {
+    width: 100%;
+    max-width: 600px;
+    display: block;
+    margin-top: 10px;
+}
+
+form {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    box-sizing: border-box;
+}
+
+label {
+    font-weight: bold;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}

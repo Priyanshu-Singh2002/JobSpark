@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post|Jobs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar bg-dark border-right">
+            <h2>Job-Postings</h2>
+            <div class="list-group list-group-flush">
+                <a href="/Company/dashboard"
+                    class="list-group-item list-group-item-action bg-dark text-white">Dashboard</a>
+                <a href="#" class="list-group-item list-group-item-action bg-dark text-white">Applications</a>
+
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1 class="text-center my-3">Job Posts</h1>
+
+            <section>
+                <form method="post" >
+                    <label for="title">Job Title:</label>
+                    <input type="text" id="title" name="title" required maxlength="50">
+
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" name="location" required maxlength="50">
+
+                    <label for="salary">Salary:</label>
+                    <input type="number" id="salary" name="salary" step="0.01" required>
+
+                    <label for="currency">Currency:</label>
+                    <input type="text" id="currency" name="currency" required maxlength="5">
+
+                    <label for="descriptions">Description:</label>
+                    <textarea id="descriptions" name="descriptions" required maxlength="1000"></textarea>
+
+                    <label for="requirements">Requirements:</label>
+                    <textarea id="requirements" name="requirements" required maxlength="1000"></textarea>
+
+                    <label for="status">Status:</label>
+                    <select id="status" name="status" required>
+                        <option value="">Select Status</option>
+                        <option value="Open">Open</option>
+                        <option value="Closed">Closed</option>
+                        <option value="Paused">Paused</option>
+                    </select>
+
+                    <label for="posted_time">Posted Time:</label>
+                    <input type="datetime-local" id="posted_time" name="posted_time" required>
+
+                    <button type="submit">Submit Job</button>
+                </form>
+
+            </section>
+
+        </main>
+
+    </div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+
+        const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        document.getElementById("posted_time").value = formattedDateTime;
+    });
+</script>
+</html>
+
+
+<!-- <main class="main-content">
+            <div class="banner">
+                <p>This is a smooth scrolling banner!</p>
+            </div>
+
+            <style>
+                .banner {
+                    width: 100%;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    box-sizing: border-box;
+                }
+
+                .banner p {
+                    display: inline-block;
+                    padding-left: 100%;
+                    animation: moveText 10s linear infinite;
+                }
+
+                @keyframes moveText {
+                    from {
+                        transform: translateX(0%);
+                    }
+
+                    to {
+                        transform: translateX(-100%);
+                    }
+                }
+            </style>
+        </main> -->

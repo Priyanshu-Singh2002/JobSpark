@@ -1,0 +1,128 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - moin
+    - hey there
+    - let's go
+    - hey dude
+    - goodmorning
+    - goodevening
+    - good afternoon
+
+- intent: goodbye
+  examples: |
+    - cu
+    - good by
+    - cee you later
+    - good night
+    - bye
+    - goodbye
+    - have a nice day
+    - see you around
+    - bye bye
+    - see you later
+
+- intent: affirm
+  examples: |
+    - yes
+    - y
+    - ok
+    - indeed
+    - of course
+    - that sounds good
+    - correct
+
+- intent: deny
+  examples: |
+    - no
+    - n
+    - never
+    - I don't think so
+    - don't like that
+    - no way
+    - not really
+
+- intent: mood_great
+  examples: |
+    - perfect
+    - great
+    - amazing
+    - feeling like a king
+    - wonderful
+    - I am feeling very good
+    - I am great
+    - I am amazing
+    - I am going to save the world
+    - super stoked
+    - extremely good
+    - so so perfect
+    - so good
+    - so perfect
+
+- intent: mood_unhappy
+  examples: |
+    - my day was horrible
+    - I am sad
+    - I don't feel very well
+    - I am disappointed
+    - super sad
+    - I'm so sad
+    - sad
+    - very sad
+    - unhappy
+    - not good
+    - not very good
+    - extremly sad
+    - so saad
+    - so sad
+
+- intent: bot_challenge
+  examples: |
+    - are you a bot?
+    - are you a human?
+    - am I talking to a bot?
+    - am I talking to a human?
+
+- intent: use_detail
+  examples: |
+    - what's the use of this JobSpark bot?
+    - what is the use of this bot?
+    - how can I use this bot?
+    - what you can do?
+    - what can you do?
+
+- intent: find_job
+  examples: |
+    - how to find a job?
+    - how can I find a job?
+    - how to search for a job?
+    - how can I search for a job?
+    - how to look for a job?
+    - how can I look for a job?
+    - how to get a job?
+    - how can I get a job?
+    - how to apply for a job?
+    - how can I apply for a job?
+    - i need a job, how i can find it?
+
+- intent: apply_job
+  examples: |
+    - how to apply for a job?
+    - how can I apply for a job?
+    - how to apply for a job online?
+    - how can I apply for a job online?
+    - how to submit an application?
+    - how can I submit an application?
+    - how to fill out an application?
+    - how can I fill out an application?
+    - i want to apply for a job, what should i do?
+    
+

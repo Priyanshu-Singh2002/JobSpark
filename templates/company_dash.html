@@ -1,0 +1,86 @@
+<!-- templates/company_dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar bg-dark border-right">
+            <h2>Company</h2>
+            <div class="list-group list-group-flush">
+                <a href="/Company/dashboard"
+                    class="list-group-item list-group-item-action bg-dark text-white">Overview</a>
+                <a href="{{ url_for('company_postings')}}" class="list-group-item list-group-item-action bg-dark text-white">Job
+                    Postings</a>
+                <a href="/messages" class="list-group-item list-group-item-action bg-dark text-white">Messages</a>
+                <a href="/profile" class="list-group-item list-group-item-action bg-dark text-white">Company Profile</a>
+                <a href="/team" class="list-group-item list-group-item-action bg-dark text-white">Team Access</a>
+                <a href="/reports" class="list-group-item list-group-item-action bg-dark text-white">Reports</a>
+                <a href="/settings" class="list-group-item list-group-item-action bg-dark text-white">Settings</a>
+                <a href="/logout" class="list-group-item list-group-item-action bg-dark text-white">Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-primary border-bottom">
+                    <span class="navbar-brand"><i class="bi bi-speedometer2" style="font-size: 2rem;"></i> Dashboard
+                        Overview</span>
+                </nav>
+            </header>
+            <section class="dashboard-stats">
+                <div class="stat-card">
+                    <h5>Active Jobs</h5>
+                    <p>{{jobs}}</p>
+                </div>
+                <div class="stat-card">
+                    <h5>Applications</h5>
+                    <p>{{AD[2]}}</p>
+                </div>
+                <div class="stat-card">
+                    <h5>Hires</h5>  
+                    <p>{{0 }}</p>
+                </div>
+                <div class="stat-card">
+                    <h5>Profile Views</h5>
+                    <p>{{ 0 }}</p>
+                </div>
+            </section>
+            <hr>
+            <section class="chart-section">
+                <h2>Application Trends</h2>
+                <img src="{{ url_for('static', filename='chart.png') }}" alt="Application Chart">
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
+
+<!-- app.py (Flask routes) -->
+<!-- from flask import Flask, render_template, url_for
+
+app = Flask(__name__)
+
+@app.route("/dashboard")
+def dashboard():
+    stats = {
+        "active_jobs": 5,
+        "applications": 120,
+        "hires": 8,
+        "views": 450
+    }
+    return render_template("company_dashboard.html", stats=stats)
+
+if __name__ == "__main__":
+    app.run(debug=True) -->

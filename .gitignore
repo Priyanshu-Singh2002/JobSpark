@@ -1,0 +1,42 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+JSenv/
+
+# Flask instance folder
+instance/
+
+# SQLite / DB files
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# VS Code settings
+.vscode/
+
+# Mac / Windows system files
+.DS_Store
+Thumbs.db
+
+# PyCharm project files (optional, in case you use it)
+.idea/
+
+# Rasa/NLP related (model artifacts, cache)
+JS_bot/models/
+JS_bot/.rasa/
+
+# Optional: Rasa training history or test cache
+JS_bot/.rasa/cache/
+JS_bot/tests/__pycache__/
+
+# Captcha or static images (optional, if dynamically generated)
+*.png
+*.jpg

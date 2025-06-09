@@ -1,0 +1,104 @@
+<style>
+.job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.job-title-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.job-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.company-name {
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: 3px;
+}
+
+
+/* The "Actively hiring" badge */
+.badge {
+    background-color: #eef6f6;
+    color: #00695C;
+    font-weight: 500;
+    padding: 3px 8px;
+    border: 1px solid  lightblue;
+    border-radius:  15px;
+    font-size: 13px;
+}
+
+/* Middle row: location, experience, salary */
+.job-meta {
+    margin: 10px 0;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.dot {
+    margin: 0 8px;
+    color: #ccc; /* or any separator color you prefer */
+}
+
+/* Bottom row: posted time + apply button */
+.job-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.posted-time {
+    font-size: 0.85rem;
+    color: #999;
+}
+
+/* The Apply button */
+.apply-btn {
+    background-color: #007bffdd;
+    color: #fff;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    /* Adjust margin or float if needed */
+}
+
+</style>
+
+<!-- job_item.html (example) -->
+{% for job in jobs %}
+<div class="job-card">
+  <!-- Top row: Title, Company, Badge -->
+  <div class="job-header">
+    <div class="job-title-container">
+      <h3 class="job-title">{{ job.title }}</h3>
+      <div class="company-name">{{ job.company_name }}
+      <span class="badge">{{job.status}}</span></div>
+    </div>
+  </div>
+
+  <!-- Middle row: Location, Experience, Salary -->
+  <div class="job-meta">
+    <span class="location">{{ job.location }}</span>
+    <span class="dot">·</span>
+    <span class="experience">{{ job.requirements  }}</span>  
+    <span class="dot">·</span>
+    <span class="salary">₹ {{ job.salary }}</span>
+  </div>
+
+  <!-- Bottom row: Posted time, Apply button -->
+  <div class="job-footer">
+    <span class="posted-time">{{ job.posted_time or "3 weeks ago" }}</span>
+    <a href="/jobs/{{ job.id }}" class="apply-btn">Apply</a>
+  </div>
+</div>
+{% endfor %}

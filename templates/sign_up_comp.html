@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign_Up | Page</title>
+    <style>
+        /* Make the page stretch full height and enable flex layout */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .Sign_Up_page {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            margin-top: 15px;
+            background-color: blue;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        footer {
+            text-align: center;
+            background-color: rgba(115, 94, 231, 0.2);
+            padding: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+
+        {% include 'nav.html' %}
+
+        <div class="content">
+            <div class="Sign_Up_page">
+                <h2>Registration Form</h2>
+                <p>Please fill out the form below to create your user profile.</p>
+
+                <form method="POST">
+                    <label for="company_name">Company_name</label>
+                    <input type="text" id="username" name="comp_name" placeholder="Username" required>
+
+                    <label for="password">Password</label>
+                    <input type="text" id="password" name="password" placeholder="Password" required>
+
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
+
+                    <label for="website">Website</label>
+                    <input type="url" id="website" name="website" placeholder="https://example.com" required>
+
+                    <button type="submit">Register</button>
+                </form>
+            </div>
+        </div>
+
+         {% include 'footer.html' %}
+
+    </div>
+</body>
+
+</html>

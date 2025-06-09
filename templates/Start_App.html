@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job-Spark--Feel The Spark</title>
+    <link rel="shortcut icon" href="{{url_for('static',filename = 'favicon.ico')}}" type="image/x-icon">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f8fa;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .role-btn {
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .role-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h2>Welcome to JobSpark</h2>
+    <p>Please select your role:</p>
+
+    <button class="role-btn" onclick="location.href= '/login/admin'">Admin</button>
+    <button class="role-btn" onclick="location.href='/login/company'">Company</button>
+    <button class="role-btn" onclick="location.href = '/login/jobseeker'">Job Seeker</button>
+
+</body>
+</html>

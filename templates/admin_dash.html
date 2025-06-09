@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin | Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #wrapper {
+            display: flex;
+            height: 100vh;
+        }
+
+        #sidebar-wrapper {
+            width: 250px;
+            min-height: 100vh;
+        }
+
+        #page-content-wrapper {
+            flex-grow: 1;
+            width: calc(100% - 250px);
+        }
+
+        .card-body canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-dark border-right" id="sidebar-wrapper">
+            <div class="sidebar-heading text-white py-1" style="margin-left: 10px"><b>JobSpark Admin</b></div>
+            <div class="list-group list-group-flush">
+                <a href="" class="list-group-item list-group-item-action bg-dark text-white">Dashboard</a>
+                <a href="#" class="list-group-item list-group-item-action bg-dark text-white">Manage Users</a>
+                <a href="#" class="list-group-item list-group-item-action bg-dark text-white">Applications</a>
+                <a href="#" class="list-group-item list-group-item-action bg-dark text-white">Jobs</a>
+                <a href="/logout" class="list-group-item list-group-item-action bg-dark text-white">Logout</a>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary border-bottom">
+                <span class="navbar-brand"><i class="bi bi-speedometer2" style="font-size: 2rem;"></i> Dashboard
+                    Overview</span>
+            </nav>
+
+            <div class="container-fluid mt-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card text-white bg-info mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Users</h5>
+                                <p class="card-text">{{total_user}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-success mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Jobs</h5>
+                                <p class="card-text">{{ total_jobs}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-warning mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Applications Received</h5>
+                                <p class="card-text">{{ total_applicants }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr style="margin-left: 6px;">
+
+            <!-- Chart and Quick Actions side-by-side -->
+            <div class="container my-2">
+                <div class="row">
+                    <!-- Chart Column -->
+                    <div class="col-md-8">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                Applicants Per Job
+                            </div>
+                            <div class="card-body">
+                                <canvas id="applicantsChart" width="600" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions Column -->
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header bg-primary text-white">
+                                Quick Actions
+                            </div>   
+                            <div class="card-body d-flex flex-column">
+                                <a href="/add-job" class="btn btn-outline-primary mb-2">
+                                    <i class="bi bi-plus-circle"></i> Add New Job
+                                </a>
+                                <a href="#" class="btn btn-outline-success mb-2" data-toggle="modal"
+                                    data-target="#verificationModal">
+                                    <i class="bi bi-check-circle"></i> Company Verification
+                                </a>
+
+                                <a href="/bulk-email" class="btn btn-outline-warning mb-2">
+                                    <i class="bi bi-envelope-fill"></i> Send Bulk Email
+                                </a>
+                                <a href="#" class="btn btn-outline-dark">
+                                    <i class="bi bi-people-fill"></i> Manage Users
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal for Company Verification -->
+    <div class="modal fade" id="verificationModal" tabindex="-1" role="dialog" aria-labelledby="verificationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="verificationModalLabel">Pending Company Verifications</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Dynamic content: Replace this with server-rendered or JavaScript-injected data -->
+                    <ul class="list-group">
+                        {% for company in unverified_comp %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ company.company_name }}</strong> — {{ company.contact_email }}
+                            </div>
+                            <a class="btn btn-sm btn-success"
+                                onclick="Company_Verified('{{company.company_id}}')">Verify</a>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item">No unverified companies found.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script id="job-data" type="application/json">
+        {
+            "labels": {{ job_titles | tojson | safe }},
+            "values": {{ applicants_count | tojson | safe }}
+        }
+    </script>
+
+    <script>
+        const rawdata = document.getElementById('job-data').textContent;
+        const parsedData = JSON.parse(rawdata);
+
+        const ctx = document.getElementById('applicantsChart').getContext('2d');
+        const myDoughnutChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: parsedData.labels,
+                datasets: [{
+                    data: parsedData.values,
+                    backgroundColor: [
+                        '#FF6384', '#4BC0C0', '#FFCE56', '#36A2EB', '#9966FF', '#C9CBCF'
+                    ],
+                    borderWidth: 1
+                }]
+
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        function Company_Verified(id) {
+            fetch(`/admin/company_verification/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Company Verified Successfully");
+                        location.reload();   // it will dynamically remove the item from the U-verified list
+                    }
+                    else {
+                        alert("fail to verify company :" + (data.message || "unknown error"));
+                    }
+                })
+                .catch(err => {
+                    console.error("Error verifying company:", err);
+                    alert("Error verifying company.");
+                }
+                );
+        }
+    </script>
+
+</body>
+
+</html>

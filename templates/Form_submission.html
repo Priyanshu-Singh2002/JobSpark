@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Submitted</title>
+    <link rel="stylesheet" href="{{url_for('static',filename = 'Form_submission.css')}}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Application for {{job['title']}} Submitted Successfully!</h1>
+    <p>Thank you for applying, We have received your application.</p>
+
+    <div class="details">
+        <p><strong>Id:</strong>{{Applicant['id']}}</p>
+        <p><strong>Name:</strong>{{Applicant['full_name']}}</p>
+        <p><strong>Email:</strong>{{Applicant['email']}}</p>
+        <p><strong>Phone:</strong>{{Applicant['phone']}}</p>
+        <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/{{Applicant['linkedin']}}" target="_blank">{{Applicant['linkedin']}}</a></p>
+    </div>
+
+    <a href="/logout" class="btn">Go to Home</a>
+</div>
+
+</body>
+</html>

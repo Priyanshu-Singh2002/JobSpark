@@ -1,0 +1,333 @@
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f9f9f9;
+}
+
+/* Fixed Navbar */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 998;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background-color: #d2286c;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo styling */
+.logo {
+    width: 110px;
+    height: 47px;
+    border-radius: 46%;
+    object-fit: cover;
+    margin-left: 45px;
+}
+
+/* Nav list */
+.nav-right>ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+    padding-right: 200px;
+}
+
+.nav-right li {
+    font-size: 17px;
+    color: white;
+    cursor: pointer;
+    position: relative;
+}
+
+.offer {
+    background-color: orange;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+}
+
+.active-tab {
+    border-bottom: 2px solid #00aaff;
+    padding-bottom: 3px;
+}
+
+
+/* Drop - Down List  */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 27px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+    width: 200px;
+    z-index: 999;
+}
+
+.dropdown-menu li {
+    padding: 8px 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    color: #333;
+}
+
+.dropdown-menu li:hover {
+    background-color: #f2f2f2;
+}
+
+/* Show dropdown on hover */
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+
+/* Offset breadcrumb below navbar */
+.breadcrumb {
+    font-size: 15px;
+    color: #666;
+    padding: 12px 100px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    margin-top: 80px;
+    /* Push below fixed navbar */
+}
+
+
+/* Container holding sidebar and job listings */
+.container {
+    display: flex;
+    padding: 30px 100px;
+}
+
+/* Scrollable sidebar */
+.filters-box {
+    width: 30%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 100px;
+    /* Enough space below navbar */
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.filter-heading {
+    font-size: 16px;
+    color: #007bff;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.filter-input,
+select {
+    width: 100%;
+    padding: 4px 8px !important;
+    margin: 6px 0 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px !important;
+    height: 32px !important;
+    box-sizing: border-box;
+}
+
+.salary-slider {
+    width: 100%;
+    margin: 10px 0 20px;
+    accent-color: #007bff;
+}
+
+.slider-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+    margin-top: -8px;
+    margin-bottom: 20px;
+    padding: 0 2px;
+}
+
+.clear-link {
+    color: #007bff;
+    font-size: 14px;
+    text-decoration: none;
+    display: block;
+    margin: 15px 0;
+}
+
+.or-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.or-separator hr {
+    flex: 1;
+    border: none;
+    border-top: 1px solid #ccc;
+}
+
+.or-separator span {
+    padding: 0 10px;
+    color: #999;
+    font-size: 12px;
+}
+
+.search-bar {
+    display: flex;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px 0 0 6px;
+    font-size: 14px;
+}
+
+.search-bar button {
+    background-color: #00aaff;
+    border: none;
+    color: white;
+    padding: 0 16px;
+    border-radius: 0 6px 6px 0;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.jobs {
+    width: 50%;
+    padding-left: 80px;
+}
+
+.jobs h2 {
+    font-size: 17px;
+    margin-bottom: 5px;
+    padding-left: 250px;
+}
+
+
+.jobs p {
+    font-size: 13px;
+    color: #666;
+    padding-left: 149px;
+}
+
+
+.job-card {
+    background: #fff;
+    padding: 17px 20px;
+    border-radius: 13px;
+    margin: 15px 0;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+    font-family: 'Roboto', sans-serif;
+}
+
+.job-title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.job-meta {
+    margin: 8px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.apply-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.apply-btn:hover {
+    background-color: #0056b3;
+}
+
+.search-bar .mic-button {
+    all: unset;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* this is for transition effect on logo */
+.logo {
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+    cursor: pointer;
+}
+
+
+/* this is for JobSpark Bot */
+#chatbot-toggle{
+    position: fixed; 
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+    background: #007bff; 
+    color: white; 
+    padding: 12px;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#chatbot-window{
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background: white;
+    border: 1px solid #ccc;
+    display: none; 
+    flex-direction: column; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#Bot_header{
+    background: #007bff; 
+    color: white; 
+    padding: 10px; 
+    font-weight: bold; 
+    display: flex; 
+    justify-content: space-between;
+}
+
+#chatbot-send{
+    background: #007bff;
+    color: white; 
+    border: none; 
+    padding: 0 16px;
+    cursor: pointer;
+}
+

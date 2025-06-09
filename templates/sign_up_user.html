@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sign Up | Page</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .Sign_Up_page {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 15px;
+            color: #666;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: #fafafa;
+            transition: border 0.3s ease;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #7c3aed;
+            outline: none;
+            background-color: #fff;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            margin-top: 25px;
+            background-color: #7c3aed;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #5b21b6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: rgba(115, 94, 231, 0.1);
+            font-size: 14px;
+            color: #444;
+        }
+
+        a {
+            color: #7c3aed;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include 'nav.html' %}
+
+    <div class="container">
+        <div class="Sign_Up_page">
+            <h2>Registration Form</h2>
+            <p>Please fill out the form below to create your user profile.</p>
+
+            <form method="POST">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Username" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Full Name" required>
+
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
+
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" name="phone" placeholder="123-456-7890" required>
+
+                <label for="skills">Skills</label>
+                <textarea id="skills" name="skills" placeholder="List your key skills..." required></textarea>
+
+                <label for="experience">Experience</label>
+                <textarea id="experience" name="experience" placeholder="Your work experience..." required></textarea>
+
+                <label for="profile_pic">Profile Picture URL</label>
+                <input type="url" id="profile_pic" name="profile_pic" placeholder="https://example.com/image.jpg" required>
+
+                <label for="resume">Resume URL</label>
+                <input type="url" id="resume" name="resume" placeholder="https://example.com/resume.pdf" required>
+
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+</body>
+
+</html>

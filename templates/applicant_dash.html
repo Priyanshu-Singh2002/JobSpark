@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Application Dashboard</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/Applicant/dashboard">
+                <img href="/" src="{{url_for('static', filename='jobSparkLogo.png') }}" alt="Logo" class="logo">
+            </a>
+        </div>
+        <div class="nav-right">
+            <ul>
+                <li>Internships <span>&#9662;</span></li>
+
+                <li class="dropdown">
+                    Courses <span class="offer">OFFER</span> <span>&#9662;</span>
+                    <ul class="dropdown-menu">
+                        <li>Web Development</li>
+                        <li>Python Programming</li>
+                        <li>Digital Marketing</li>
+                        <li>Machine Learning</li>
+                        <li>Data Science</li>
+                        <li>Android Development</li>
+                    </ul>
+                </li>
+
+                <li class="active-tab">Jobs <span>&#9662;</span></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="/logout" style="text-decoration: none;">Home</a> <span>&#8250;</span> <span>Jobs</span>
+    </div>
+
+    <div class="container">
+        <!-- Filters Sidebar -->
+        <form action="/filter" method="post" class="filters-box">
+            <h3 class="filter-heading">🔽 Filters</h3>
+
+            <label for="profile">Profile</label>
+            <input type="text" id="profile" name="profile" class="filter-input" placeholder="e.g. Software Engineer">
+
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location" class="filter-input" placeholder="e.g. Delhi">
+
+            <label><input type="checkbox" name="remote"> Work from home</label><br>
+            <label><input type="checkbox" name="parttime"> Part-time</label> <br>
+
+            <label for="salary">Annual salary (in lakhs)</label>
+            <input type="range" min="0" max="10" value="2" class="salary-slider" id="salary" name="salary">
+
+            <div class="slider-scale">
+                <span>0</span><span>2</span><span>4</span><span>6</span><span>8</span><span>10</span>
+            </div>
+
+            <label for="experience">Years of experience</label>
+            <select id="experience" name="experience" class="filter-input">
+                <option>Select years of experience</option>
+                <option value="fresher">Fresher</option>
+                <option value="1">1 year</option>
+                <option value="2">2+ years</option>
+            </select>
+
+            <div class="clear-or-search">
+                <a href="#" class="clear-link">Clear all</a>
+
+                <div class="or-separator">
+                    <hr><span>OR</span>
+                    <hr>
+                </div>
+
+                <h4 class="search-heading">Search</h4>
+                <div class="search-bar">
+                    <input type="text" name="search" id="searchInput" placeholder="Search for jobs...">
+                    <button type="button" class="mic-button" onclick="startListening()">🎙️</button>
+                    <button type="submit" id="submit_button"><span>&#128269;</span></button>
+                </div>
+
+            </div>
+        </form>
+
+
+        <!-- Job Listings -->
+        <section class="jobs">
+            <h2>{{ jobs|length if jobs else none }} Jobs Available</h2>
+            <p>Search and Apply to Latest Job Vacancies & Openings in India</p>
+
+            {% include 'job_item.html' %}
+
+            <!-- Repeat job-card for each listing -->
+        </section>
+
+    </div>
+
+    <!-- Chatbot button -->
+    <div id="chatbot-toggle">💬</div>
+
+    <!-- Chatbot window -->
+    <div id="chatbot-window">
+        <div id="Bot_header">
+            JobSpark-Bot
+            <span id="close-chatbot" style="cursor: pointer;">×</span>
+        </div>
+        <div id="chatbot-messages" style="flex: 1; padding: 10px; overflow-y: auto; font-size: 14px;"></div>
+        <div style="display: flex; border-top: 1px solid #ccc;">
+            <input type="text" id="chatbot-input" placeholder="Type a message..."
+                style="flex: 1; border: none; padding: 10px; outline: none;">
+            <button id="chatbot-send">Send</button>
+        </div>
+    </div>
+
+
+    <script>
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-IN';
+        
+        function startListening() {
+            recognition.start();  // It will activate speak recognition..
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;   // It will hold the recognize sentence..
+                document.getElementById('searchInput').value = transcript;
+
+                console.log("You said:", transcript);
+                
+                document.getElementById('submit_button').click();
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error:", event.error)
+            }
+        }
+
+        // Chatbot functionality logix
+        document.getElementById('chatbot-toggle').onclick = () => {
+            document.getElementById('chatbot-window').style.display = 'flex';
+        };
+
+        document.getElementById('close-chatbot').onclick = () => {
+            document.getElementById('chatbot-window').style.display = 'none';
+        };
+
+        document.getElementById('chatbot-send').onclick = sendMessage;
+        document.getElementById('chatbot-input').addEventListener("keypress", function (e) {
+            if (e.key === "Enter") sendMessage();
+        });
+
+        function appendMessage(sender, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.textContent = (sender === 'user' ? 'You: ' : 'Bot: ') + text;
+            msgDiv.style.marginBottom = '8px';
+            msgDiv.style.background = sender === 'user' ? '#e9f5ff' : '#f1f1f1';
+            msgDiv.style.padding = '6px 10px';
+            msgDiv.style.borderRadius = '6px';
+            document.getElementById('chatbot-messages').appendChild(msgDiv);
+            document.getElementById('chatbot-messages').scrollTop = document.getElementById('chatbot-messages').scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatbot-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            appendMessage('user', message);
+            input.value = '';
+
+            fetch('http://localhost:5005/webhooks/rest/webhook', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sender: 'user', message: message })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length === 0) appendMessage('bot', "...");
+                    data.forEach(d => appendMessage('bot', d.text));
+                })
+                .catch(err => {
+                    appendMessage('bot', "Error connecting to chatbot.");
+                    console.error(err);
+                });
+        }
+
+    </script>
+</body>
+
+</html>
