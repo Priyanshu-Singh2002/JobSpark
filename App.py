@@ -30,14 +30,27 @@ from DB import (
 
 # from flask_sqlalchemy import SQLAlchemy
 from Validation import generate_captcha_code, generate_captcha_image
+from flask_talisman import Talisman
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 import config
 from search_nlp import Extract_filter
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 
 app = Flask(__name__)
+#initializing the limiter
+limiter = Limiter(
+    app = app,
+    key_func=get_remote_address,
+    default_limits=["200 per day","50 per hour"]
+)
+
 app.secret_key = os.getenv("SECRET_KEY")
 app.config.from_object(config)
+
+Talisman(app, content_security_policy=None)  # Basic protection
 
 # db = SQLAlchemy(app)   # This is used to initialize just after creating the app
 init_db(app)  # To explicitly intialize the database
@@ -49,6 +62,7 @@ def Start():
 
 
 @app.route("/login/jobseeker", methods=["GET", "POST"])
+@limiter.limit("50 per minute") 
 def Login_user():
     # now i will check username and login Credentials
     if request.method == "POST":
@@ -62,7 +76,8 @@ def Login_user():
             user_applicant = get_applicant_user(username, password)
 
             if user_applicant:
-                session["username"] = username
+                session.clear()    # Clear any previous session data
+                session["username"] = username    # Store new username in session
                 session["role"] = user_applicant["role"]
                 if user_applicant["role"] == "applicant":
                     return redirect(url_for("applicant_dashboard"))
@@ -80,6 +95,7 @@ def Login_user():
 
 
 @app.route("/user_sign_up", methods=["GET", "POST"])
+@limiter.limit("3 per minute")  
 def user_sign_up():
     data = request.form.to_dict()
     if data:
@@ -90,6 +106,7 @@ def user_sign_up():
 
 
 @app.route("/login/company", methods=["GET", "POST"])
+@limiter.limit("3 per minute") 
 def Login_company():
     # now i will check Company_name and login Credentials
     if request.method == "POST":
@@ -125,6 +142,7 @@ def Login_company():
 
 
 @app.route("/comp_sign_up", methods=["GET", "POST"])
+@limiter.limit("1 per minute") 
 def comp_sign_up():
     data = request.form.to_dict()
     if data:
@@ -135,6 +153,7 @@ def comp_sign_up():
 
 
 @app.route("/login/admin", methods=["GET", "POST"])
+@limiter.limit("10 per hour") 
 def Login_admin():
     if request.method == "POST":
         if (

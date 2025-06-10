@@ -29,7 +29,7 @@ JobSpark is a Flask-based job listing and search web application with intelligen
 ## 🔧 Installation
 
 ```bash
-git clone https://github.com/your-username/JobSpark.git
+git clone https://github.com/Priyanshu-Singh2002/JobSpark.git
 cd JobSpark
 pip install -r requirements.txt
 python app.py
