@@ -1,5 +1,6 @@
 from sqlalchemy import text, and_ , or_
 from flask_sqlalchemy import SQLAlchemy
+from datetime import timedelta
 
 db = SQLAlchemy()
 
@@ -180,3 +181,31 @@ def load_filter_jobs_from_db(**kwargs):
     if not jobs:
         return None
     return [job.to_dict() for job in jobs]
+
+
+
+
+def get_weekly_applications_by_company(company_id):
+    query = text("""
+        SELECT 
+            YEARWEEK(applied_on, 1) AS year_week,
+            COUNT(*) AS count
+        FROM application
+        JOIN jobs ON application.job_id = jobs.id
+        WHERE jobs.comp_id = :company_id
+        GROUP BY year_week
+        ORDER BY year_week DESC
+        LIMIT 6;
+    """)
+    result = db.session.execute(query, {'company_id': company_id}).fetchall()
+
+    # Reverse for chronological order (oldest to newest)
+    result = result[::-1]
+
+    weekly_counts = [row['count'] for row in result]
+
+    # Fill missing weeks if needed (e.g., always return 6 weeks)
+    while len(weekly_counts) < 6:
+        weekly_counts.insert(0, 0)
+
+    return weekly_counts

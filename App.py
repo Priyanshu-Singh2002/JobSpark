@@ -24,6 +24,7 @@ from DB import (
     get_user_count,
     get_company_job_count,
     get_Unverified_companies,
+    get_weekly_applications_by_company,
     load_filter_jobs_from_db,
     verify_company,
 )
@@ -230,7 +231,8 @@ def company_dashboard():
         total_jobs,Appl_Detail = get_company_job_count(session["Comp_id"])
         total_appl = sum([job['Appl_C'] for job in Appl_Detail])
         Appl_Detail.append(total_appl)
-        return render_template("company_dash.html",jobs=total_jobs,AD = Appl_Detail)
+        AD = get_weekly_applications_by_company(session["Comp_id"])  # <== new logic
+        return render_template("company_dash.html", jobs=total_jobs, AD=AD)
     return redirect(url_for("Login_company"))
 
 
@@ -277,7 +279,10 @@ def apply_job(job_id):
 @app.route("/filter", methods=["POST"])
 def filter_job():
     data = request.form.get("search")
-    filter_list = Extract_filter(data)
+    if data:
+        filter_list = Extract_filter(data)
+    else:
+        filter_list = request.form.to_dict()
 
     jobs = load_filter_jobs_from_db(**filter_list)
     if jobs:
@@ -292,6 +297,20 @@ def filter_job():
 def logout():
     session.clear()
     return redirect(url_for("Start"))
+
+
+# API Endpoints for fetching jobs and job details Via react or flutter apps
+@app.route("/api/jobs")
+def api_jobs():
+    jobs = load_jobs_from_db()
+    return jsonify(jobs)
+
+@app.route("/api/jobs/<int:id>")
+def api_job(id):
+    job = load_job_from_db(id)
+    if job:
+        return jsonify(job)
+    return jsonify({"error": "Job not found"}), 404
 
 
 if __name__ == "__main__":

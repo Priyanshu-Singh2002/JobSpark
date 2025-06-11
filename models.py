@@ -1,5 +1,7 @@
 from sqlalchemy import text
 from DB import db
+from datetime import datetime
+
 
 class Admin(db.Model):
     __tablename__ = 'admins'
@@ -139,6 +141,7 @@ class Application(db.Model):
     education = db.Column(db.String(100), nullable=False)
     work_experience = db.Column(db.String(100), nullable=False)
     resume = db.Column(db.String(100), nullable=False)
+    applied_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __init__(self, job_id, full_name, email, phone, linkedin, education, work_experience, resume):
         self.job_id = job_id
