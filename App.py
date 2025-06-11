@@ -143,7 +143,7 @@ def Login_company():
 
 
 @app.route("/comp_sign_up", methods=["GET", "POST"])
-@limiter.limit("1 per minute") 
+@limiter.limit("100 per minute") 
 def comp_sign_up():
     data = request.form.to_dict()
     if data:
@@ -232,7 +232,7 @@ def company_dashboard():
         total_appl = sum([job['Appl_C'] for job in Appl_Detail])
         Appl_Detail.append(total_appl)
         AD = get_weekly_applications_by_company(session["Comp_id"])  # <== new logic
-        return render_template("company_dash.html", jobs=total_jobs, AD=AD)
+        return render_template("company_dash.html", jobs=total_jobs, AD=AD,APL = total_appl)
     return redirect(url_for("Login_company"))
 
 
