@@ -107,7 +107,7 @@ def user_sign_up():
 
 
 @app.route("/login/company", methods=["GET", "POST"])
-@limiter.limit("3 per minute") 
+@limiter.limit("30 per minute") 
 def Login_company():
     # now i will check Company_name and login Credentials
     if request.method == "POST":
