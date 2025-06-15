@@ -42,4 +42,5 @@
 #  queue: queue
 
 
+# use this endpoint to run the bot with the REST API enabled
 # rasa run --enable-api --cors "http://127.0.0.1:5000"
