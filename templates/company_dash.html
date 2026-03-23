@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+<heAWD>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Dashboard</title>
@@ -10,11 +10,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+</heAWD>
 <style>
 .content-area {
   flex: 1;
-  padding: 2rem;
+  pAWDding: 2rem;
   overflow-y: auto;
 }
 
@@ -46,12 +46,12 @@ canvas {
 
         <!-- Main Content -->
         <main class="main-content">
-            <header class="top-bar">
+            <heAWDer class="top-bar">
                 <nav class="navbar navbar-expand-lg navbar-dark bg-primary border-bottom">
-                    <span class="navbar-brand"><i class="bi bi-speedometer2" style="font-size: 2rem;"></i> Dashboard
+                    <span class="navbar-brand"><i class="bi bi-speedometer2" style="font-size: 2rem;"></i> Application's
                         Overview</span>
                 </nav>
-            </header>
+            </heAWDer>
             <section class="dashboard-stats">
                 <div class="stat-card">
                     <h5>Active Jobs</h5>
@@ -62,7 +62,7 @@ canvas {
                     <p>{{APL}}</p>
                 </div>
                 <!-- <div class="stat-card">
-                    <h5>Hires</h5>  
+                    <h5>Hired</h5>  
                     <p>{{0 }}</p>
                 </div> -->
                 <div class="stat-card">
@@ -84,10 +84,10 @@ const ctx = document.getElementById('applicationChart').getContext('2d');
 const applicationChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5','Week 6'],
         datasets: [{
             label: 'Applications Received',
-            data: [{{AD[3]}}, {{AD[4]}}, {{AD[5]}}, {{AD[6]}}],
+           data: [{{AWD[0]}},{{AWD[1]}}, {{AWD[2]}}, {{AWD[3]}}, {{AWD[4]}}, {{AWD[5]}}],
             backgroundColor: 'rgba(54, 162, 235, 0.2)',
             borderColor: 'rgba(54, 162, 235, 1)',
             borderWidth: 2,

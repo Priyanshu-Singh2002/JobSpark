@@ -183,8 +183,6 @@ def load_filter_jobs_from_db(**kwargs):
     return [job.to_dict() for job in jobs]
 
 
-
-
 def get_weekly_applications_by_company(company_id):
     query = text("""
         SELECT 

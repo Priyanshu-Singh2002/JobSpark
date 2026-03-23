@@ -67,6 +67,7 @@ init_db(app)
 
 # ---------------- ROUTES ----------------#
 
+
 @app.route("/captcha_image")
 def captcha_image():
     captcha_code = session["captcha"]
@@ -227,16 +228,15 @@ def admin_dashboard():
 def company_verification(company_id):
     return jsonify(verify_company(company_id))
 
-
 @app.route("/Company/dashboard", methods=["GET"])
 def company_dashboard():
     if "comp_name" in session and session["role"] == "company" and "Comp_id" in session:
         total_jobs, Appl_Detail = get_company_job_count(session["Comp_id"])
         total_appl = sum([job["Appl_C"] for job in Appl_Detail])
-        Appl_Detail.append(total_appl)
-        AD = get_weekly_applications_by_company(session["Comp_id"])  # <== new logic
+        Appl_Detail.append({"title": "Total_Application", "T_ApplCount": total_appl})
+        AWD = get_weekly_applications_by_company(session["Comp_id"])  # <== new logic
         return render_template(
-            "company_dash.html", jobs=total_jobs, AD=AD, APL=total_appl
+            "company_dash.html", jobs=total_jobs, AWD=AWD, APL=total_appl
         )
     return redirect(url_for("Login_company"))
 
