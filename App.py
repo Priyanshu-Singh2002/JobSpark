@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 from search_nlp import Extract_filter
 
-# ✅ Load environment variables FIRST
 load_dotenv()
 
 import config
@@ -50,8 +49,8 @@ app = Flask(__name__)
 app.config.from_object(config.Config)
 
 # ✅ Debug (remove later)
-print("ENV DATABASE_URI:", os.getenv("DATABASE_URI"))
-print("FINAL CONFIG DB URI:", app.config.get("SQLALCHEMY_DATABASE_URI"))
+# print("ENV DATABASE_URI:", os.getenv("DATABASE_URI"))
+# print("FINAL CONFIG DB URI:", app.config.get("SQLALCHEMY_DATABASE_URI"))
 
 # ✅ Security
 Talisman(app, content_security_policy=None)
@@ -66,14 +65,14 @@ limiter = Limiter(
 # ✅ Initialize DB
 init_db(app)
 
-
-# ---------------- ROUTES ---------------- #
+# ---------------- ROUTES ----------------#
 
 @app.route("/captcha_image")
 def captcha_image():
     captcha_code = session["captcha"]
     img_buf = generate_captcha_image(captcha_code)
     return send_file(img_buf, mimetype="image/png")
+
 
 @app.route("/")
 def Start():
@@ -222,6 +221,81 @@ def admin_dashboard():
             unverified_comp=get_Unverified_companies(),
         )
     return redirect(url_for("Login_admin"))
+
+
+@app.route("/admin/company_verification/<int:company_id>", methods=["POST"])
+def company_verification(company_id):
+    return jsonify(verify_company(company_id))
+
+
+@app.route("/Company/dashboard", methods=["GET"])
+def company_dashboard():
+    if "comp_name" in session and session["role"] == "company" and "Comp_id" in session:
+        total_jobs, Appl_Detail = get_company_job_count(session["Comp_id"])
+        total_appl = sum([job["Appl_C"] for job in Appl_Detail])
+        Appl_Detail.append(total_appl)
+        AD = get_weekly_applications_by_company(session["Comp_id"])  # <== new logic
+        return render_template(
+            "company_dash.html", jobs=total_jobs, AD=AD, APL=total_appl
+        )
+    return redirect(url_for("Login_company"))
+
+
+@app.route("/Company/postings", methods=["GET", "POST"])
+def company_postings():
+    if "comp_name" in session and session["role"] == "company":
+        id = session.get("Comp_id")
+        if request.method == "POST":
+            data = request.form.to_dict()
+            if id is not None:
+                add_job_to_db(data, id)  # job is listed in database
+                flash("Job Posted Successfully!")
+                return redirect(url_for("company_postings"))
+        else:
+            return render_template("company_posting.html")
+    return redirect(url_for("Login_company"))
+
+
+@app.route("/jobs/<id>")
+def job(id):
+    job = load_job_from_db(id)
+    if job:
+        return render_template("job_desc.html", job=job)
+    return "<h1>Job Not Found!</h1>", 404
+
+
+# This is used when data is sent over a URL
+""" @app.route('/jobs/<id>/apply')
+def apply_job(id):
+    data = request.args
+    return jsonify(data) """
+
+
+# This is used when data is sent over a form using POST method
+@app.route("/jobs/<job_id>/apply", methods=["POST", "GET"])
+def apply_job(job_id):
+    data = request.form.to_dict()  # data comes from the application form
+    job = load_job_from_db(job_id)
+    Applicant = Add_Applicant(job_id, data)  # New Applicant Data is added to Database
+    return render_template("Form_submission.html", job=job, Applicant=Applicant)
+
+
+# this route is for filter the job
+@app.route("/filter", methods=["POST"])
+def filter_job():
+    data = request.form.get("search")
+    if data:
+        filter_list = Extract_filter(data)
+    else:
+        filter_list = request.form.to_dict()
+
+    jobs = load_filter_jobs_from_db(**filter_list)
+    if jobs:
+        return render_template("applicant_dash.html", jobs=jobs)
+    else:
+        # flash("No jobs found with the given filter!")
+        jobs = []
+        return render_template("applicant_dash.html", jobs=jobs)
 
 
 @app.route("/logout")
