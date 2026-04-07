@@ -19,6 +19,22 @@ body {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.navbar2 {
+    position: fixed;
+    height: 70px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 998;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    margin-bottom: 20px;
+    background-color: #d2286c;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 /* Logo styling */
 .logo {
     width: 110px;
@@ -287,19 +303,19 @@ select {
 
 
 /* this is for JobSpark Bot */
-#chatbot-toggle{
-    position: fixed; 
+#chatbot-toggle {
+    position: fixed;
     bottom: 20px;
     right: 20px;
     cursor: pointer;
-    background: #007bff; 
-    color: white; 
+    background: #007bff;
+    color: white;
     padding: 12px;
     border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-#chatbot-window{
+#chatbot-window {
     position: fixed;
     bottom: 80px;
     right: 20px;
@@ -307,27 +323,56 @@ select {
     height: 400px;
     background: white;
     border: 1px solid #ccc;
-    display: none; 
-    flex-direction: column; 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 12px;
     overflow: hidden;
 }
 
-#Bot_header{
-    background: #007bff; 
-    color: white; 
-    padding: 10px; 
-    font-weight: bold; 
-    display: flex; 
+#Bot_header {
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    display: flex;
     justify-content: space-between;
 }
 
-#chatbot-send{
+#chatbot-send {
     background: #007bff;
-    color: white; 
-    border: none; 
+    color: white;
+    border: none;
     padding: 0 16px;
     cursor: pointer;
+}
+
+.saved-container {
+    width: 80%;
+    margin: 120px auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.saved-header {
+    padding: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+    background: #f5f5f5;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-align: center;
+}
+
+.container_in {
+    overflow-y: auto;
+    padding: 10px;
+    scrollbar-width: thin;
 }
 

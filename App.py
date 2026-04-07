@@ -36,6 +36,9 @@ from DB import (
     get_weekly_applications_by_company,
     load_filter_jobs_from_db,
     verify_company,
+    save_job,
+    get_saved_jobs,
+    remove_saved_job,
 )
 
 from Validation import generate_captcha_code, generate_captcha_image
@@ -45,24 +48,24 @@ from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
 
-# ✅ Load config properly (ONLY this, no override later)
+# Load config properly (ONLY this, no override later)
 app.config.from_object(config.Config)
 
-# ✅ Debug (remove later)
+# Debug (remove later)
 # print("ENV DATABASE_URI:", os.getenv("DATABASE_URI"))
 # print("FINAL CONFIG DB URI:", app.config.get("SQLALCHEMY_DATABASE_URI"))
 
-# ✅ Security
+# Security
 Talisman(app, content_security_policy=None)
 
-# ✅ Rate Limiter
+# Rate Limiter
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"],
+    default_limits=["200 per day", "150 per hour"],
 )
 
-# ✅ Initialize DB
+# Initialize DB
 init_db(app)
 
 # ---------------- ROUTES ----------------#
@@ -95,8 +98,11 @@ def Login_user():
 
             if user_applicant:
                 session.clear()
+                session["user_id"] = user_applicant["id"]
                 session["username"] = username
                 session["role"] = user_applicant["role"]
+                session["name"] = user_applicant["name"]
+                session["profile_pic"] = user_applicant["profile_pic"]
 
                 if user_applicant["role"] == "applicant":
                     return redirect(url_for("applicant_dashboard"))
@@ -168,7 +174,7 @@ def comp_sign_up():
 
 
 @app.route("/login/admin", methods=["GET", "POST"])
-@limiter.limit("10 per hour")
+@limiter.limit("100 per hour")
 def Login_admin():
     if request.method == "POST":
         if (
@@ -227,6 +233,7 @@ def admin_dashboard():
 @app.route("/admin/company_verification/<int:company_id>", methods=["POST"])
 def company_verification(company_id):
     return jsonify(verify_company(company_id))
+
 
 @app.route("/Company/dashboard", methods=["GET"])
 def company_dashboard():
@@ -318,6 +325,42 @@ def api_job(id):
     if job:
         return jsonify(job)
     return jsonify({"error": "Job not found"}), 404
+
+
+# Save Jobs or Book-Mark
+@app.route("/save-job/<int:job_id>")
+def save_job_route(job_id):
+
+    if "username" not in session and "user_id" not in session:
+        flash("Please login first", "warning")
+        return redirect("/login/jobseeker")
+
+    save_job(session["user_id"], job_id)
+
+    flash("Job Saved Successfully", "success")
+
+    return redirect(request.referrer)
+
+
+@app.route("/saved-jobs")
+def saved_jobs():
+
+    if "username" not in session and "user_id" not in session:
+        return redirect("/login/jobseeker")
+
+    jobs = get_saved_jobs(session["user_id"])
+
+    return render_template("saved_jobs.html", jobs=jobs)
+
+
+@app.route("/remove-saved/<int:job_id>")
+def remove_saved(job_id):
+
+    remove_saved_job(session["user_id"], job_id)
+
+    flash("Removed from Saved Jobs", "info")
+
+    return redirect(request.referrer)
 
 
 # ---------------- RUN ---------------- #

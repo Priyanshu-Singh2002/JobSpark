@@ -37,7 +37,8 @@
     </nav>
 
     <div class="breadcrumb">
-        <a href="/logout" style="text-decoration: none;">Home</a> <span>&#8250;</span> <span>Jobs</span>
+        <a href="/logout" style="text-decoration: none;">Home</a> <span>&#8250;</span> 
+        <a href="/saved-jobs" style="text-decoration: none;">Jobs</a>
     </div>
 
     <div class="container">
@@ -94,7 +95,6 @@
             <p>Search and Apply to Latest Job Vacancies & Openings in India</p>
 
             {% include 'job_item.html' %}
-
             <!-- Repeat job-card for each listing -->
         </section>
 
@@ -121,7 +121,7 @@
     <script>
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = 'en-IN';
-        
+
         function startListening() {
             recognition.start();  // It will activate speak recognition..
 
@@ -130,7 +130,7 @@
                 document.getElementById('searchInput').value = transcript;
 
                 console.log("You said:", transcript);
-                
+
                 document.getElementById('submit_button').click();
             };
 

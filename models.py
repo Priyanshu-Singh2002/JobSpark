@@ -188,7 +188,36 @@ class Company(db.Model):
             "role" : self.role
         }
 
-
     def __repr__(self):
         return f"<Company {self.name}>"
-    
+
+
+class SavedJob(db.Model):
+    __tablename__ = "saved_jobs"
+    __table_args__ = {'schema': 'priyanshu_career'}
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('priyanshu_career.user.id'),
+        nullable=False
+    )
+
+    job_id = db.Column(
+        db.Integer,
+        db.ForeignKey('priyanshu_career.jobs.id'),
+        nullable=False
+    )
+
+    saved_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    # relationships
+    user = db.relationship('User', backref='saved_jobs', lazy=True)
+    job = db.relationship('Job', backref='saved_jobs', lazy=True)
+
+    def __repr__(self):
+        return f"<SavedJob User:{self.user_id} Job:{self.job_id}>"

@@ -207,3 +207,55 @@ def get_weekly_applications_by_company(company_id):
         weekly_counts.insert(0, 0)
 
     return weekly_counts
+
+
+# Save Job in DB or Book Mark Job
+
+from models import SavedJob, Job, User
+
+def save_job(user_id, job_id):
+
+    # check if already saved
+    existing = SavedJob.query.filter_by(
+        user_id=user_id,
+        job_id=job_id
+    ).first()
+
+    if existing:
+        return False
+
+    saved = SavedJob(
+        user_id=user_id,
+        job_id=job_id
+    )
+
+    db.session.add(saved)
+    db.session.commit()
+
+    return True
+
+def get_saved_jobs(user_id):
+
+    saved_jobs = (
+        db.session.query(Job)
+        .join(SavedJob, Job.id == SavedJob.job_id)
+        .filter(SavedJob.user_id == user_id)
+        .all()
+    )
+
+    return saved_jobs
+
+def remove_saved_job(user_id, job_id):
+
+    saved = SavedJob.query.filter_by(
+        user_id=user_id,
+        job_id=job_id
+    ).first()
+
+    if saved:
+        db.session.delete(saved)
+        db.session.commit()
+
+        return True
+
+    return False

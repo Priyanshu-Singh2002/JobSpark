@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Saved Jobs</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body>
+    <div>
+        <nav class="navbar2">
+            <div>
+                <a href="/Applicant/dashboard" style="text-decoration: none;">⬅️</a>
+            </div>
+        </nav>
+    </div>
+
+    <div class="saved-container">
+
+        <div class="saved-header">
+            Saved Jobs
+        </div>
+
+        <div class="container_in">
+            {% for job in jobs %}
+            <div class="card p-1 m-2">
+                <h4>{{job.title}}</h4>
+                <p>{{job.location}}</p>
+                <p>{{job.salary}} {{job.currency}}</p>
+
+                <a href="/jobs/{{job.id}}" class="btn btn-primary">
+                    View Job
+                </a>
+
+                <a href="/remove-saved/{{job.id}}" class="btn btn-danger">
+                    Remove
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</body>
+
+</html>
