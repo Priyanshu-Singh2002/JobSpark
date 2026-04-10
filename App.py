@@ -241,7 +241,13 @@ def bulk_email():
         return redirect(url_for("Login_admin"))
 
     if request.method == "GET":
-        return render_template("bulk_email.html")
+        required = ["SMTP_HOST", "SMTP_PORT", "SMTP_USERNAME", "SMTP_PASSWORD", "MAIL_FROM"]
+        missing = [k for k in required if not app.config.get(k)]
+        return render_template(
+            "bulk_email.html",
+            smtp_missing=missing,
+            mail_from=app.config.get("MAIL_FROM") or "",
+        )
 
     audience = (request.form.get("audience") or "").strip()
     subject = (request.form.get("subject") or "").strip()

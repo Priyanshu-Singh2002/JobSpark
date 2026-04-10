@@ -65,13 +65,24 @@
                     </div>
                 </div>
 
-                <div class="card mt-3">
+                {% if smtp_missing and smtp_missing|length > 0 %}
+                <div class="card mt-3 border-danger">
                     <div class="card-body">
-                        <h6 class="mb-2">Required environment variables</h6>
-                        <code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USERNAME</code>, <code>SMTP_PASSWORD</code>,
-                        <code>SMTP_USE_TLS</code>, <code>MAIL_FROM</code>
+                        <h6 class="mb-2 text-danger">Missing environment variables</h6>
+                        <div class="text-muted mb-2">Add these to your <code>.env</code> file and restart the app:</div>
+                        {% for k in smtp_missing %}
+                        <code>{{ k }}</code>{% if not loop.last %}, {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
+                {% else %}
+                <div class="card mt-3 border-success">
+                    <div class="card-body">
+                        <h6 class="mb-1 text-success">SMTP configured</h6>
+                        <small class="text-muted">From: <code>{{ mail_from }}</code></small>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
