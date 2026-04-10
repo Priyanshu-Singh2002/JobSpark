@@ -161,6 +161,24 @@ def get_user_count():
     return total_users
 
 
+def get_all_user_emails():
+    emails = db.session.query(User.email).all()
+    return [e[0] for e in emails if e and e[0]]
+
+
+def get_all_company_emails(include_unverified: bool = False):
+    q = db.session.query(Company.contact_email)
+    if not include_unverified:
+        q = q.filter(Company.status == "verified")
+    emails = q.all()
+    return [e[0] for e in emails if e and e[0]]
+
+
+def get_all_applicant_emails():
+    emails = db.session.query(Application.email).distinct().all()
+    return [e[0] for e in emails if e and e[0]]
+
+
 #function to show the filter jobs
 def load_filter_jobs_from_db(**kwargs):
     titleF = kwargs.get("title","").strip()

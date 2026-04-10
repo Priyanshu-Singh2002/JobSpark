@@ -39,12 +39,16 @@ from DB import (
     save_job,
     get_saved_jobs,
     remove_saved_job,
+    get_all_user_emails,
+    get_all_company_emails,
+    get_all_applicant_emails,
 )
 
 from Validation import generate_captcha_code, generate_captcha_image
 from flask_talisman import Talisman
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from email_utils import send_bulk_email_smtp
 
 app = Flask(__name__)
 
@@ -228,6 +232,55 @@ def admin_dashboard():
             unverified_comp=get_Unverified_companies(),
         )
     return redirect(url_for("Login_admin"))
+
+
+@app.route("/bulk-email", methods=["GET", "POST"])
+@limiter.limit("10 per minute")
+def bulk_email():
+    if "adm_name" not in session or session.get("role") != "admin":
+        return redirect(url_for("Login_admin"))
+
+    if request.method == "GET":
+        return render_template("bulk_email.html")
+
+    audience = (request.form.get("audience") or "").strip()
+    subject = (request.form.get("subject") or "").strip()
+    body = (request.form.get("body") or "").strip()
+
+    if not subject or not body:
+        flash("Subject and message are required.", "error")
+        return redirect(url_for("bulk_email"))
+
+    if audience == "users":
+        recipients = get_all_user_emails()
+    elif audience == "applicants":
+        recipients = get_all_applicant_emails()
+    elif audience == "companies_verified":
+        recipients = get_all_company_emails(include_unverified=False)
+    elif audience == "companies_all":
+        recipients = get_all_company_emails(include_unverified=True)
+    else:
+        flash("Invalid audience selected.", "error")
+        return redirect(url_for("bulk_email"))
+
+    try:
+        sent, failed = send_bulk_email_smtp(
+            smtp_host=app.config.get("SMTP_HOST"),
+            smtp_port=app.config.get("SMTP_PORT"),
+            smtp_username=app.config.get("SMTP_USERNAME"),
+            smtp_password=app.config.get("SMTP_PASSWORD"),
+            smtp_use_tls=app.config.get("SMTP_USE_TLS", True),
+            mail_from=app.config.get("MAIL_FROM"),
+            recipients=recipients,
+            subject=subject,
+            body=body,
+        )
+    except Exception as e:
+        flash(f"Email sending failed: {e}", "error")
+        return redirect(url_for("bulk_email"))
+
+    flash(f"Bulk email complete. Sent: {sent}, Failed: {failed}", "success")
+    return redirect(url_for("bulk_email"))
 
 
 @app.route("/admin/company_verification/<int:company_id>", methods=["POST"])
