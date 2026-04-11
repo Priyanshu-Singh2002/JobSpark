@@ -1,4 +1,4 @@
-from sqlalchemy import text, and_ , or_
+from sqlalchemy import text, and_, or_
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
 
@@ -179,26 +179,139 @@ def get_all_applicant_emails():
     return [e[0] for e in emails if e and e[0]]
 
 
-#function to show the filter jobs
+def _job_row_with_company(job):
+    d = job.to_dict()
+    co = getattr(job, "company", None)
+    d["company_name"] = co.company_name if co else ""
+    return d
+
+
 def load_filter_jobs_from_db(**kwargs):
-    titleF = kwargs.get("title","").strip()
-    locationF = kwargs.get("location","").strip()
-    salaryF = kwargs.get("salary","").strip()
-    # experienceF = kwargs.get("experience","").strip()
+    """Filter jobs with AND semantics. Salary slider is minimum LPA (0–10); stored salary is INR."""
+    kwargs = dict(kwargs)
+    kwargs.pop("search", None)
 
-    filters = []
-    if titleF:
-        filters.append(getattr(Job, 'title').ilike(f"%{titleF}%"))
-    if locationF:
-        filters.append(getattr(Job, 'location').ilike(f"%{locationF}%"))
-    if salaryF:
-        filters.append(getattr(Job,'salary').ilike(f"%{salaryF}%"))
+    title_f = (kwargs.get("title") or "").strip()
+    location_f = (kwargs.get("location") or "").strip()
 
-    jobs = db.session.query(Job).filter(or_(*filters)).all()
+    loc_lower = location_f.lower()
+    if loc_lower in ("remote", "wfh", "work from home"):
+        kwargs["remote"] = "on"
+        location_f = ""
 
+    salary_slider = kwargs.get("salary", "")
+    try:
+        min_lakhs_slider = float(str(salary_slider).strip() or 0)
+    except ValueError:
+        min_lakhs_slider = 0.0
+
+    nlp_lakhs = kwargs.get("min_salary_lakhs")
+    try:
+        min_lakhs_nlp = float(nlp_lakhs) if nlp_lakhs not in (None, "") else None
+    except (TypeError, ValueError):
+        min_lakhs_nlp = None
+
+    min_lakhs = max(min_lakhs_slider, min_lakhs_nlp or 0.0)
+
+    experience_f = (kwargs.get("experience") or "").strip()
+    if experience_f.lower().startswith("select"):
+        experience_f = ""
+
+    def _checkbox_on(v):
+        if v is True:
+            return True
+        if v in (None, "", False):
+            return False
+        return str(v).lower().strip() in ("on", "true", "1", "yes")
+
+    want_remote = _checkbox_on(kwargs.get("remote"))
+    want_parttime = _checkbox_on(kwargs.get("parttime"))
+
+    q = db.session.query(Job).join(Company, Job.comp_id == Company.company_id)
+
+    preds = []
+
+    if title_f:
+        t = f"%{title_f}%"
+        preds.append(
+            or_(
+                Job.title.ilike(t),
+                Job.descriptions.ilike(t),
+                Job.requirements.ilike(t),
+            )
+        )
+
+    if location_f:
+        preds.append(Job.location.ilike(f"%{location_f}%"))
+
+    if min_lakhs > 0:
+        min_inr = min_lakhs * 100000.0
+        preds.append(Job.salary >= min_inr)
+
+    if want_remote:
+        preds.append(
+            or_(
+                Job.location.ilike("%remote%"),
+                Job.location.ilike("%work from home%"),
+                Job.location.ilike("%wfh%"),
+                Job.descriptions.ilike("%remote%"),
+                Job.descriptions.ilike("%work from home%"),
+                Job.requirements.ilike("%remote%"),
+                Job.requirements.ilike("%work from home%"),
+            )
+        )
+
+    if want_parttime:
+        preds.append(
+            or_(
+                Job.descriptions.ilike("%part-time%"),
+                Job.descriptions.ilike("%part time%"),
+                Job.requirements.ilike("%part-time%"),
+                Job.requirements.ilike("%part time%"),
+                Job.title.ilike("%part-time%"),
+                Job.title.ilike("%part time%"),
+            )
+        )
+
+    if experience_f == "fresher":
+        preds.append(
+            or_(
+                Job.requirements.ilike("%fresher%"),
+                Job.requirements.ilike("%fresh graduate%"),
+                Job.requirements.ilike("%entry level%"),
+                Job.requirements.ilike("%0 year%"),
+                Job.requirements.ilike("%no experience%"),
+                Job.descriptions.ilike("%fresher%"),
+            )
+        )
+    elif experience_f == "1":
+        preds.append(
+            or_(
+                Job.requirements.ilike("%1 year%"),
+                Job.requirements.ilike("%1+ year%"),
+                Job.requirements.ilike("%one year%"),
+            )
+        )
+    elif experience_f == "2":
+        preds.append(
+            or_(
+                Job.requirements.ilike("%2 year%"),
+                Job.requirements.ilike("%2+ year%"),
+                Job.requirements.ilike("%3 year%"),
+                Job.requirements.ilike("%4 year%"),
+                Job.requirements.ilike("%5 year%"),
+                Job.requirements.ilike("%senior%"),
+                Job.requirements.ilike("%experienced%"),
+            )
+        )
+
+    if preds:
+        q = q.filter(and_(*preds))
+
+    jobs = q.all()
     if not jobs:
         return None
-    return [job.to_dict() for job in jobs]
+    return [_job_row_with_company(job) for job in jobs]
 
 
 def get_weekly_applications_by_company(company_id):

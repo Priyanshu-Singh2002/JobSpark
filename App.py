@@ -212,7 +212,7 @@ def Login_admin():
 def applicant_dashboard():
     if "username" in session and session["role"] == "applicant":
         jobs = load_jobs_from_db()
-        return render_template("applicant_dash.html", jobs=jobs)
+        return render_template("applicant_dash.html", jobs=jobs, form_values=None)
     return redirect(url_for("Login_user"))
 
 
@@ -346,22 +346,39 @@ def apply_job(job_id):
     return render_template("Form_submission.html", job=job, Applicant=Applicant)
 
 
+def _merge_job_filters(form_dict, search_text):
+    """Form fields win over NLP when both are set; search supplements empty fields."""
+    merged = dict(form_dict)
+    merged.pop("search", None)
+    q = (search_text or "").strip()
+    if not q:
+        return merged
+    nlp = Extract_filter(q)
+    for key, val in nlp.items():
+        if val in (None, "", False):
+            continue
+        cur = merged.get(key)
+        empty = cur in (None, "") or (
+            isinstance(cur, str) and not str(cur).strip()
+        )
+        if empty:
+            merged[key] = val
+    return merged
+
+
 # this route is for filter the job
 @app.route("/filter", methods=["POST"])
 def filter_job():
-    data = request.form.get("search")
-    if data:
-        filter_list = Extract_filter(data)
-    else:
-        filter_list = request.form.to_dict()
+    form = request.form.to_dict()
+    search_q = (form.get("search") or "").strip()
+    filter_list = _merge_job_filters(form, search_q)
 
     jobs = load_filter_jobs_from_db(**filter_list)
-    if jobs:
-        return render_template("applicant_dash.html", jobs=jobs)
-    else:
-        # flash("No jobs found with the given filter!")
+    if not jobs:
         jobs = []
-        return render_template("applicant_dash.html", jobs=jobs)
+    return render_template(
+        "applicant_dash.html", jobs=jobs, form_values=request.form
+    )
 
 
 @app.route("/logout")
@@ -421,8 +438,9 @@ def remove_saved(job_id):
 
     return redirect(request.referrer)
 
-
 # ---------------- RUN ---------------- #
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
+
+

@@ -41,22 +41,32 @@
         <a href="/saved-jobs" style="text-decoration: none;">Jobs</a>
     </div>
 
+    {% set fv = form_values or {} %}
     <div class="container">
         <!-- Filters Sidebar -->
-        <form action="/filter" method="post" class="filters-box">
+        <form action="/filter" method="post" class="filters-box" id="job-filter-form">
             <h3 class="filter-heading">🔽 Filters</h3>
+            <p class="filter-hint">All filters apply together. Salary is a <strong>minimum</strong> (₹ LPA).</p>
 
             <label for="profile">Profile</label>
-            <input type="text" id="profile" name="title" class="filter-input" placeholder="e.g. Software Engineer">
+            <input type="text" id="profile" name="title" class="filter-input" placeholder="e.g. Software Engineer"
+                value="{{ fv.get('title', '') }}">
 
             <label for="location">Location</label>
-            <input type="text" id="location" name="location" class="filter-input" placeholder="e.g. Delhi">
+            <input type="text" id="location" name="location" class="filter-input" placeholder="e.g. Delhi or Remote"
+                value="{{ fv.get('location', '') }}">
 
-            <label><input type="checkbox" name="remote"> Work from home</label><br>
-            <label><input type="checkbox" name="parttime"> Part-time</label> <br>
+            <label class="checkbox-row"><input type="checkbox" name="remote" value="on" {% if fv.get('remote') == 'on' %}checked{% endif %}> Work from home</label>
+            <label class="checkbox-row"><input type="checkbox" name="parttime" value="on" {% if fv.get('parttime') == 'on' %}checked{% endif %}> Part-time</label>
 
-            <label for="salary">Annual salary (in lakhs)</label>
-            <input type="range" min="0" max="10" value="2" class="salary-slider" id="salary" name="salary">
+            <label for="salary">Minimum annual salary (₹ lakhs per year)</label>
+            <div class="salary-row">
+                <input type="range" min="0" max="10" step="0.5"
+                    class="salary-slider" id="salary" name="salary"
+                    value="{{ fv.get('salary', '2') }}">
+                <output class="salary-value" id="salaryValue" for="salary">{{ fv.get('salary', '2') }}</output>
+                <span class="salary-unit">LPA</span>
+            </div>
 
             <div class="slider-scale">
                 <span>0</span><span>2</span><span>4</span><span>6</span><span>8</span><span>10</span>
@@ -64,14 +74,14 @@
 
             <label for="experience">Years of experience</label>
             <select id="experience" name="experience" class="filter-input">
-                <option>Select years of experience</option>
-                <option value="fresher">Fresher</option>
-                <option value="1">1 year</option>
-                <option value="2">2+ years</option>
+                <option value="" {% if not fv.get('experience') %}selected{% endif %}>Select years of experience</option>
+                <option value="fresher" {% if fv.get('experience') == 'fresher' %}selected{% endif %}>Fresher</option>
+                <option value="1" {% if fv.get('experience') == '1' %}selected{% endif %}>1 year</option>
+                <option value="2" {% if fv.get('experience') == '2' %}selected{% endif %}>2+ years</option>
             </select>
 
             <div class="clear-or-search">
-                <a href="#" class="clear-link">Clear all</a>
+                <a href="{{ url_for('applicant_dashboard') }}" class="clear-link">Clear all</a>
 
                 <div class="or-separator">
                     <hr><span>OR</span>
@@ -79,10 +89,13 @@
                 </div>
 
                 <h4 class="search-heading">Search</h4>
-                <div class="search-bar">
-                    <input type="text" name="search" id="searchInput" placeholder="Search for jobs...">
-                    <button type="button" class="mic-button" onclick="startListening()">🎙️</button>
-                    <button type="submit" id="submit_button"><span>&#128269;</span></button>
+                <p class="filter-hint voice-hint">Type or use the mic — keywords are merged with filters above.</p>
+                <div class="search-bar search-bar-row">
+                    <input type="text" name="search" id="searchInput" placeholder="Search for jobs..."
+                        value="{{ fv.get('search', '') }}" autocomplete="off">
+                    <button type="button" class="mic-button" id="micBtn" onclick="startListening()" title="Voice search"
+                        aria-label="Start voice search">🎙️</button>
+                    <button type="submit" id="submit_button" title="Search" aria-label="Search jobs"><span>&#128269;</span></button>
                 </div>
 
             </div>
@@ -91,7 +104,7 @@
 
         <!-- Job Listings -->
         <section class="jobs">
-            <h2>{{ jobs|length if jobs else none }} Jobs Available</h2>
+            <h2>{{ jobs|length }} Jobs Available</h2>
             <p>Search and Apply to Latest Job Vacancies & Openings in India</p>
 
             {% include 'job_item.html' %}
@@ -119,25 +132,44 @@
 
 
     <script>
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'en-IN';
-
-        function startListening() {
-            recognition.start();  // It will activate speak recognition..
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = SpeechRec ? new SpeechRec() : null;
+        if (recognition) {
+            recognition.lang = 'en-IN';
+            recognition.continuous = false;
+            recognition.interimResults = false;
 
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;   // It will hold the recognize sentence..
+                const transcript = event.results[0][0].transcript;
                 document.getElementById('searchInput').value = transcript;
-
-                console.log("You said:", transcript);
-
                 document.getElementById('submit_button').click();
             };
 
             recognition.onerror = (event) => {
-                console.error("Speech recognition error:", event.error)
+                console.error("Speech recognition error:", event.error);
+            };
+        }
+
+        function startListening() {
+            if (!recognition) {
+                alert("Voice search is not supported in this browser.");
+                return;
+            }
+            try {
+                recognition.start();
+            } catch (e) {
+                console.error(e);
             }
         }
+
+        (function () {
+            const sal = document.getElementById('salary');
+            const out = document.getElementById('salaryValue');
+            if (!sal || !out) return;
+            const sync = () => { out.textContent = sal.value; };
+            sal.addEventListener('input', sync);
+            sync();
+        })();
 
         // Chatbot functionality logix
         document.getElementById('chatbot-toggle').onclick = () => {
