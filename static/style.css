@@ -131,7 +131,7 @@ body {
     padding: 30px 100px;
 }
 
-/* Sidebar: scroll inside panel when tall; do not stretch to match short job column */
+/* Sidebar: stays visible while scrolling jobs (sticky). If the form is taller than the screen, scroll inside the card. */
 .filters-box {
     width: 30%;
     min-width: 260px;
@@ -141,10 +141,10 @@ body {
     padding-bottom: 28px;
     border-radius: 12px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
-    position: sticky;
-    top: 100px;
     align-self: flex-start;
-    max-height: calc(100vh - 120px);
+    position: sticky;
+    top: 88px;
+    max-height: calc(100vh - 88px - 24px);
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
@@ -219,13 +219,20 @@ select {
 }
 
 .slider-scale {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    justify-items: center;
+    gap: 2px;
+    font-size: 11px;
     color: #666;
     margin-top: -8px;
     margin-bottom: 20px;
-    padding: 0 2px;
+    padding: 0 4px;
+}
+
+.slider-scale span {
+    min-width: 0;
+    text-align: center;
 }
 
 .clear-link {
