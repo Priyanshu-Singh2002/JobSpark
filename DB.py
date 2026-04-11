@@ -78,17 +78,45 @@ def  add_company_to_db(company_data):
     db.session.add(new_company)
     db.session.commit()
 
-def add_job_to_db(job_data,id):
+def _norm_work_mode(val):
+    x = (val or "office").strip().lower()
+    return x if x in ("office", "remote", "wfh", "hybrid") else "office"
+
+
+def _norm_employment_type(val):
+    x = (val or "full_time").strip().lower()
+    return x if x in ("full_time", "part_time") else "full_time"
+
+
+def _norm_job_experience(val):
+    """0 = Fresher, 1 = 1 year, 2+ = 2+ years (aligned with applicant filter)."""
+    if val is None or val == "":
+        return None
+    try:
+        n = int(val)
+    except (TypeError, ValueError):
+        return None
+    if n < 0:
+        return 0
+    if n > 2:
+        return 2
+    return n
+
+
+def add_job_to_db(job_data, id):
     new_job = Job(
         title=job_data["title"],
-        location=job_data["location"],  
+        location=job_data["location"],
         salary=job_data["salary"],
         currency=job_data["currency"],
         descriptions=job_data["descriptions"],
         requirements=job_data["requirements"],
         status=job_data["status"],
         posted_time=job_data["posted_time"],
-        comp_id= id
+        comp_id=id,
+        work_mode=_norm_work_mode(job_data.get("work_mode")),
+        employment_type=_norm_employment_type(job_data.get("employment_type")),
+        experience=_norm_job_experience(job_data.get("experience")),
     )
 
     db.session.add(new_job)
@@ -147,9 +175,17 @@ def get_company_job_count(company_id):
     return count,rows
 
         
-#function to get Number of applicants for all job
+# function to get number of applicants per job (one row per job_id; ordered by count desc)
 def get_applicants_count():
-    sql = text('select J.title, count(*) as Applicant_count from application A INNER JOIN jobs J on A.job_id = J.id group by A.job_id;')
+    sql = text(
+        """
+        SELECT J.id AS job_id, J.title AS title, COUNT(*) AS Applicant_count
+        FROM application A
+        INNER JOIN jobs J ON A.job_id = J.id
+        GROUP BY J.id, J.title
+        ORDER BY Applicant_count DESC
+        """
+    )
     result = db.session.execute(sql)
     rows = result.mappings().all()
     return rows
@@ -194,10 +230,26 @@ def load_filter_jobs_from_db(**kwargs):
     title_f = (kwargs.get("title") or "").strip()
     location_f = (kwargs.get("location") or "").strip()
 
-    loc_lower = location_f.lower()
-    if loc_lower in ("remote", "wfh", "work from home"):
-        kwargs["remote"] = "on"
-        location_f = ""
+    wm_f = (kwargs.get("work_mode") or "").strip().lower()
+    if wm_f not in ("", "office", "remote", "wfh", "hybrid"):
+        wm_f = ""
+
+    et_f = (kwargs.get("employment_type") or "").strip().lower()
+    if et_f not in ("", "full_time", "part_time"):
+        et_f = ""
+
+    def _checkbox_on(v):
+        if v is True:
+            return True
+        if v in (None, "", False):
+            return False
+        return str(v).lower().strip() in ("on", "true", "1", "yes")
+
+    # Legacy: old "Work from home" / "Part-time" checkboxes
+    if not wm_f and _checkbox_on(kwargs.get("remote")):
+        wm_f = "wfh"
+    if not et_f and _checkbox_on(kwargs.get("parttime")):
+        et_f = "part_time"
 
     salary_slider = kwargs.get("salary", "")
     try:
@@ -217,16 +269,6 @@ def load_filter_jobs_from_db(**kwargs):
     if experience_f.lower().startswith("select"):
         experience_f = ""
 
-    def _checkbox_on(v):
-        if v is True:
-            return True
-        if v in (None, "", False):
-            return False
-        return str(v).lower().strip() in ("on", "true", "1", "yes")
-
-    want_remote = _checkbox_on(kwargs.get("remote"))
-    want_parttime = _checkbox_on(kwargs.get("parttime"))
-
     q = db.session.query(Job).join(Company, Job.comp_id == Company.company_id)
 
     preds = []
@@ -242,36 +284,25 @@ def load_filter_jobs_from_db(**kwargs):
         )
 
     if location_f:
-        preds.append(Job.location.ilike(f"%{location_f}%"))
+        # "Gurgaon, India" should still match DB rows stored as "Gurgaon" (comma-split, OR segments)
+        segments = [s.strip() for s in location_f.split(",") if s.strip()]
+        if segments:
+            if len(segments) == 1:
+                preds.append(Job.location.ilike(f"%{segments[0]}%"))
+            else:
+                preds.append(
+                    or_(*[Job.location.ilike(f"%{seg}%") for seg in segments])
+                )
 
     if min_lakhs > 0:
         min_inr = min_lakhs * 100000.0
         preds.append(Job.salary >= min_inr)
 
-    if want_remote:
-        preds.append(
-            or_(
-                Job.location.ilike("%remote%"),
-                Job.location.ilike("%work from home%"),
-                Job.location.ilike("%wfh%"),
-                Job.descriptions.ilike("%remote%"),
-                Job.descriptions.ilike("%work from home%"),
-                Job.requirements.ilike("%remote%"),
-                Job.requirements.ilike("%work from home%"),
-            )
-        )
+    if wm_f:
+        preds.append(Job.work_mode == wm_f)
 
-    if want_parttime:
-        preds.append(
-            or_(
-                Job.descriptions.ilike("%part-time%"),
-                Job.descriptions.ilike("%part time%"),
-                Job.requirements.ilike("%part-time%"),
-                Job.requirements.ilike("%part time%"),
-                Job.title.ilike("%part-time%"),
-                Job.title.ilike("%part time%"),
-            )
-        )
+    if et_f:
+        preds.append(Job.employment_type == et_f)
 
     if experience_f == "fresher":
         preds.append(

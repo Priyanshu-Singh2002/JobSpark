@@ -16,22 +16,69 @@
 
         #wrapper {
             display: flex;
-            height: 100vh;
+            min-height: 100vh;
+            align-items: stretch;
         }
 
         #sidebar-wrapper {
             width: 250px;
+            flex-shrink: 0;
             min-height: 100vh;
+            background-color: #343a40;
         }
 
         #page-content-wrapper {
-            flex-grow: 1;
-            width: calc(100% - 250px);
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
         }
 
-        .card-body canvas {
-            width: 100% !important;
-            height: 100% !important;
+        /* One consistent horizontal padding for all main content (matches Bootstrap fluid gutters) */
+        .admin-main {
+            padding-left: 15px;
+            padding-right: 15px;
+            max-width: 100%;
+        }
+
+        @media (min-width: 576px) {
+            .admin-main {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+        }
+
+        .admin-hr {
+            margin: 1rem 0 1.25rem;
+            border-color: #dee2e6;
+        }
+
+        #page-content-wrapper>.navbar {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        @media (min-width: 576px) {
+            #page-content-wrapper>.navbar {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+        }
+
+        .admin-chart-wrap {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            border-radius: 6px;
+            background: #f8fafc;
+        }
+
+        .chart-empty-hint {
+            color: #6c757d;
+            font-size: 0.95rem;
+            padding: 2rem 1rem;
+            text-align: center;
         }
     </style>
 </head>
@@ -58,57 +105,58 @@
                     Overview</span>
             </nav>
 
-            <div class="container-fluid mt-4">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card text-white bg-info mb-3">
-                            <div class="card-body">
+            <div class="admin-main">
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card text-white bg-info h-100">
+                            <div class="card-body py-3">
                                 <h5 class="card-title">Total Users</h5>
-                                <p class="card-text">{{total_user}}</p>
+                                <p class="card-text mb-0">{{total_user}}</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card text-white bg-success mb-3">
-                            <div class="card-body">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card text-white bg-success h-100">
+                            <div class="card-body py-3">
                                 <h5 class="card-title">Total Jobs</h5>
-                                <p class="card-text">{{ total_jobs}}</p>
+                                <p class="card-text mb-0">{{ total_jobs}}</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card text-white bg-warning mb-3">
-                            <div class="card-body">
+                        <div class="card text-white bg-warning h-100">
+                            <div class="card-body py-3">
                                 <h5 class="card-title">Applications Received</h5>
-                                <p class="card-text">{{ total_applicants }}</p>
+                                <p class="card-text mb-0">{{ total_applicants }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <hr style="margin-left: 6px;">
 
-            <!-- Chart and Quick Actions side-by-side -->
-            <div class="container my-2">
-                <div class="row">
-                    <!-- Chart Column -->
-                    <div class="col-md-8">
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                Applicants Per Job
+                <hr class="admin-hr">
+
+                <!-- Chart and Quick Actions -->
+                <div class="row align-items-start">
+                    <div class="col-lg-8 mb-3 mb-lg-0">
+                        <div class="card mb-0">
+                            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                                <span>Top jobs by applications</span>
+                                <small class="text-muted">Top 10 postings · remaining jobs grouped as &quot;Other&quot; · hover for full title &amp; ID</small>
                             </div>
-                            <div class="card-body">
-                                <canvas id="applicantsChart" width="600" height="300"></canvas>
+                            <div class="card-body p-2">
+                                <div id="chartEmpty" class="chart-empty-hint d-none">No applications yet — nothing to chart.</div>
+                                <div class="admin-chart-wrap">
+                                    <canvas id="applicantsChart" aria-label="Applicants per job chart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Quick Actions Column -->
-                    <div class="col-md-4">
-                        <div class="card mb-3">
+                    <div class="col-lg-4">
+                        <div class="card mb-0 border shadow-sm">
                             <div class="card-header bg-primary text-white">
                                 Quick Actions
-                            </div>   
+                            </div>
                             <div class="card-body d-flex flex-column">
                                 <a href="/add-job" class="btn btn-outline-primary mb-2">
                                     <i class="bi bi-plus-circle"></i> Add New Job
@@ -117,12 +165,8 @@
                                     data-target="#verificationModal">
                                     <i class="bi bi-check-circle"></i> Company Verification
                                 </a>
-
-                                <a href="/bulk-email" class="btn btn-outline-warning mb-2">
+                                <a href="/bulk-email" class="btn btn-outline-warning mb-0">
                                     <i class="bi bi-envelope-fill"></i> Send Bulk Email
-                                </a>
-                                <a href="#" class="btn btn-outline-dark">
-                                    <i class="bi bi-people-fill"></i> Manage Users
                                 </a>
                             </div>
                         </div>
@@ -181,25 +225,126 @@
         const rawdata = document.getElementById('job-data').textContent;
         const parsedData = JSON.parse(rawdata);
 
-        const ctx = document.getElementById('applicantsChart').getContext('2d');
-        const myDoughnutChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: parsedData.labels,
-                datasets: [{
-                    data: parsedData.values,
-                    backgroundColor: [
-                        '#FF6384', '#4BC0C0', '#FFCE56', '#36A2EB', '#9966FF', '#C9CBCF'
-                    ],
-                    borderWidth: 1
-                }]
+        const rawLabels = parsedData.labels || [];
+        const rawValues = parsedData.values || [];
+        const n = rawLabels.length;
 
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
+        const emptyEl = document.getElementById('chartEmpty');
+        const wrapEl = document.querySelector('.admin-chart-wrap');
+
+        var TOP = 10;
+        var BAR = 'rgba(37, 99, 235, 0.82)';
+        var BAR_BORDER = 'rgb(29, 78, 216)';
+        var OTHER_BAR = 'rgba(71, 85, 105, 0.85)';
+        var OTHER_BORDER = 'rgb(51, 65, 85)';
+
+        function stripJobIdLabel(s) {
+            return String(s).replace(/\s*·\s*#\d+\s*$/, '').trim();
+        }
+
+        function shorten(s, max) {
+            s = String(s);
+            return s.length > max ? s.slice(0, max - 1) + '…' : s;
+        }
+
+        if (n === 0) {
+            emptyEl.classList.remove('d-none');
+            wrapEl.style.display = 'none';
+        } else {
+            var chartLabels = [];
+            var chartValues = [];
+            var tooltipTitles = [];
+            var i;
+            var take = Math.min(TOP, n);
+            for (i = 0; i < take; i++) {
+                chartLabels.push(shorten(stripJobIdLabel(rawLabels[i]), 34));
+                chartValues.push(rawValues[i]);
+                tooltipTitles.push(rawLabels[i]);
             }
-        });
+            var otherMeta = null;
+            if (n > TOP) {
+                var restVals = rawValues.slice(TOP);
+                var sumRest = restVals.reduce(function (a, b) { return a + b; }, 0);
+                var numRest = n - TOP;
+                chartLabels.push('Other (' + numRest + ' jobs)');
+                chartValues.push(sumRest);
+                tooltipTitles.push(
+                    'Other — ' + numRest + ' job postings · ' + sumRest + ' applications total'
+                );
+                otherMeta = { numRest: numRest, sumRest: sumRest };
+            }
+
+            var rowCount = chartLabels.length;
+            wrapEl.style.height = Math.min(520, Math.max(300, rowCount * 38 + 120)) + 'px';
+
+            var bg = chartLabels.map(function (_, idx) {
+                return idx === rowCount - 1 && otherMeta ? OTHER_BAR : BAR;
+            });
+            var bd = chartLabels.map(function (_, idx) {
+                return idx === rowCount - 1 && otherMeta ? OTHER_BORDER : BAR_BORDER;
+            });
+
+            const ctx = document.getElementById('applicantsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Applications',
+                        data: chartValues,
+                        backgroundColor: bg,
+                        borderColor: bd,
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        maxBarThickness: 26
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function (items) {
+                                    if (!items.length) return '';
+                                    var idx = items[0].dataIndex;
+                                    return tooltipTitles[idx] || items[0].label;
+                                },
+                                label: function (ctx) {
+                                    var v = ctx.parsed.x;
+                                    return ' ' + v + ' application' + (v === 1 ? '' : 's');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0,
+                                stepSize: 1
+                            },
+                            grid: { color: 'rgba(15, 23, 42, 0.06)' },
+                            title: {
+                                display: true,
+                                text: 'Applications',
+                                font: { size: 12, weight: '500' }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                autoSkip: false,
+                                font: { size: 12 }
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
 
         function Company_Verified(id) {
             fetch(`/admin/company_verification/${id}`, {

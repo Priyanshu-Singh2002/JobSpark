@@ -1,0 +1,18 @@
+{# Maps Job.experience (int, nullable) to the same wording as the applicant filter. #}
+{% macro experience_label(exp) -%}
+{%- if exp is not none -%}
+{%- set n = exp | int -%}
+{%- if n <= 0 %}Fresher{% elif n == 1 %}1 year{% else %}2+ years{% endif -%}
+{%- else -%}
+Not specified
+{%- endif -%}
+{% endmacro %}
+
+{# Works for ORM Job instances and plain dict rows from SQL. #}
+{% macro experience_for_job(job) -%}
+{%- if job is mapping -%}
+{{- experience_label(job.get('experience')) -}}
+{%- else -%}
+{{- experience_label(job.experience) -}}
+{%- endif -%}
+{% endmacro %}

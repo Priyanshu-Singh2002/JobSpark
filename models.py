@@ -80,12 +80,25 @@ class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(50), nullable=False)
     location = db.Column(db.String(50), nullable=False)
+    work_mode = db.Column(
+        db.String(20),
+        nullable=False,
+        server_default=text("'office'"),
+    )
+    employment_type = db.Column(
+        db.String(20),
+        nullable=False,
+        server_default=text("'full_time'"),
+    )
     salary = db.Column(db.Float, nullable=False)
     currency = db.Column(db.String(5), nullable=False)
     descriptions = db.Column(db.String(1000), nullable=False)
     requirements = db.Column(db.String(1000), nullable=False)
     status = db.Column(db.String(30), nullable=False)
     posted_time = db.Column(db.Date, nullable=False)
+
+    # Minimum years of experience for the role (nullable in DB for legacy rows)
+    experience = db.Column(db.Integer, nullable=True)
 
     comp_id = db.Column(db.Integer, db.ForeignKey('priyanshu_career.company.company_id'), nullable=False)
 
@@ -95,9 +108,25 @@ class Job(db.Model):
     # Define the relationship with the Application model
     applications = db.relationship('Application', backref='jobs', lazy=True)
     
-    def __init__(self, title, location, salary, currency, descriptions, requirements,status, posted_time, comp_id):
+    def __init__(
+        self,
+        title,
+        location,
+        salary,
+        currency,
+        descriptions,
+        requirements,
+        status,
+        posted_time,
+        comp_id,
+        work_mode="office",
+        employment_type="full_time",
+        experience=None,
+    ):
         self.title = title
         self.location = location
+        self.work_mode = work_mode
+        self.employment_type = employment_type
         self.salary = salary
         self.currency = currency
         self.descriptions = descriptions
@@ -105,19 +134,23 @@ class Job(db.Model):
         self.status = status
         self.posted_time = posted_time
         self.comp_id = comp_id
+        self.experience = experience
 
     def to_dict(self):
         return {
             "id": self.id,
             "title": self.title,
             "location": self.location,
+            "work_mode": self.work_mode,
+            "employment_type": self.employment_type,
             "salary": self.salary,
             "currency": self.currency,
             "descriptions": self.descriptions,
             "requirements": self.requirements,
             "comp_id": self.comp_id,
             "status": self.status,
-            "posted_time": self.posted_time
+            "posted_time": self.posted_time,
+            "experience": self.experience,
         }
 
     def __repr__(self):

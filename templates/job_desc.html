@@ -20,6 +20,17 @@
 
             <h3>{{ job['title'] }}</h3>
             <p>Location: {{ job['location'] }}</p>
+            {% from 'macros/job_helpers.html' import experience_for_job %}
+            <p class="text-muted small">
+                Work mode:
+                {{ {'office': 'Office', 'remote': 'Remote', 'wfh': 'WFH', 'hybrid': 'Hybrid'}.get(job.get('work_mode', 'office'), 'Office') }}
+                ·
+                Employment:
+                {{ 'Part-time' if job.get('employment_type', 'full_time') == 'part_time' else 'Full-time' }}
+                ·
+                Experience:
+                {{ experience_for_job(job) }}
+            </p>
             <p class="mb-1"><strong >Description:</strong></p>
             <ul>
                 {% for line in job.descriptions.split('\n') %}

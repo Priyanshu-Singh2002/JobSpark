@@ -26,10 +26,12 @@
         </div>
 
         <div class="container_in">
+            {% from 'macros/job_helpers.html' import experience_for_job %}
             {% for job in jobs %}
             <div class="card p-1 m-2">
                 <h4>{{job.title}}</h4>
                 <p>{{job.location}}</p>
+                <p class="text-muted small mb-1">Experience: {{ experience_for_job(job) }}</p>
                 <p>{{job.salary}} {{job.currency}}</p>
 
                 <a href="/jobs/{{job.id}}" class="btn btn-primary">

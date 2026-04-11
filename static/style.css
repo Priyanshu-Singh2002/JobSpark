@@ -133,13 +133,13 @@ body {
 
 /* Sidebar: stays visible while scrolling jobs (sticky). If the form is taller than the screen, scroll inside the card. */
 .filters-box {
-    width: 30%;
-    min-width: 260px;
+    width: 26%;
+    min-width: 220px;
+    max-width: 300px;
     min-height: 0;
     background: #fff;
-    padding: 20px;
-    padding-bottom: 28px;
-    border-radius: 12px;
+    padding: 14px 14px 18px;
+    border-radius: 10px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
     align-self: flex-start;
     position: sticky;
@@ -150,10 +150,16 @@ body {
     -webkit-overflow-scrolling: touch;
 }
 
+.filters-box > label:not(.checkbox-row) {
+    font-size: 12px;
+    font-weight: 500;
+    color: #444;
+}
+
 .filter-heading {
-    font-size: 16px;
+    font-size: 15px;
     color: #007bff;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     text-align: center;
 }
 
@@ -169,10 +175,22 @@ select {
     box-sizing: border-box;
 }
 
+.filters-box .filter-input,
+.filters-box select.filter-input {
+    margin: 3px 0 8px !important;
+    padding: 3px 8px !important;
+    font-size: 12px !important;
+    height: 30px !important;
+}
+
 .salary-slider {
     width: 100%;
-    margin: 10px 0 8px;
+    margin: 6px 0 6px;
     accent-color: #007bff;
+}
+
+.filters-box .salary-slider {
+    margin: 4px 0 4px;
 }
 
 .salary-row {
@@ -184,32 +202,36 @@ select {
 }
 
 .salary-value {
-    min-width: 2.5rem;
+    min-width: 2.25rem;
     font-weight: 600;
     color: #007bff;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .salary-unit {
-    font-size: 13px;
+    font-size: 12px;
     color: #666;
 }
 
 .filter-hint {
-    font-size: 12px;
+    font-size: 11px;
     color: #666;
-    margin: -8px 0 14px;
-    line-height: 1.4;
+    margin: -4px 0 10px;
+    line-height: 1.35;
+}
+
+.filters-box .filter-hint {
+    margin: -2px 0 8px;
 }
 
 .voice-hint {
-    margin: 0 0 10px;
+    margin: 0 0 8px;
 }
 
 .checkbox-row {
     display: block;
-    margin: 6px 0;
-    font-size: 14px;
+    margin: 4px 0;
+    font-size: 13px;
     cursor: pointer;
 }
 
@@ -223,11 +245,15 @@ select {
     grid-template-columns: repeat(6, minmax(0, 1fr));
     justify-items: center;
     gap: 2px;
-    font-size: 11px;
+    font-size: 10px;
     color: #666;
-    margin-top: -8px;
-    margin-bottom: 20px;
-    padding: 0 4px;
+    margin-top: -6px;
+    margin-bottom: 12px;
+    padding: 0 2px;
+}
+
+.filters-box .slider-scale {
+    margin-bottom: 10px;
 }
 
 .slider-scale span {
@@ -237,10 +263,10 @@ select {
 
 .clear-link {
     color: #007bff;
-    font-size: 14px;
+    font-size: 13px;
     text-decoration: none;
     display: block;
-    margin: 15px 0;
+    margin: 10px 0 8px;
 }
 
 .or-separator {
@@ -268,26 +294,35 @@ select {
 
 .search-bar-row {
     align-items: stretch;
-    min-height: 44px;
+    min-height: 40px;
+}
+
+.filters-box .search-bar-row {
+    min-height: 38px;
 }
 
 .search-heading {
-    margin: 12px 0 6px;
-    font-size: 15px;
+    margin: 8px 0 4px;
+    font-size: 14px;
 }
 
 .clear-or-search {
-    margin-top: 4px;
+    margin-top: 2px;
 }
 
 .search-bar input {
     flex: 1;
     min-width: 0;
-    padding: 10px 12px;
+    padding: 8px 10px;
     border: 1px solid #ccc;
     border-radius: 6px 0 0 6px;
     border-right: none;
-    font-size: 14px;
+    font-size: 13px;
+}
+
+.filters-box .search-bar input {
+    padding: 7px 8px;
+    font-size: 12px;
 }
 
 .search-bar .mic-button {
@@ -295,16 +330,22 @@ select {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 44px;
+    min-width: 40px;
     background: #f0f4f8;
     border: 1px solid #ccc;
     border-left: none;
     border-right: none;
-    padding: 0 12px;
-    font-size: 18px;
+    padding: 0 10px;
+    font-size: 16px;
     cursor: pointer;
     line-height: 1;
     box-sizing: border-box;
+}
+
+.filters-box .search-bar .mic-button {
+    min-width: 36px;
+    padding: 0 8px;
+    font-size: 15px;
 }
 
 .search-bar .mic-button:hover {
@@ -316,15 +357,21 @@ select {
     background-color: #00aaff;
     border: none;
     color: white;
-    padding: 0 16px;
+    padding: 0 12px;
     border-radius: 0 6px 6px 0;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
 }
 
+.filters-box .search-bar button[type="submit"] {
+    padding: 0 10px;
+    font-size: 15px;
+}
+
 .jobs {
-    width: 50%;
-    padding-left: 80px;
+    flex: 1;
+    min-width: 0;
+    padding-left: 56px;
 }
 
 .jobs h2 {

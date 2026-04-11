@@ -181,20 +181,26 @@ def Extract_filter(transcript: str):
         "title": "",
         "location": "",
         "min_salary_lakhs": None,
-        "remote": "",
-        "parttime": "",
+        "work_mode": "",
+        "employment_type": "",
         "experience": "",
     }
 
-    # --- Remote / hybrid ---
-    if re.search(
-        r"\b(remote|work from home|wfh|work-from-home)\b", t_lower
-    ):
-        filters["remote"] = "on"
+    # --- Work mode (matches DB column work_mode) ---
+    if re.search(r"\bhybrid\b", t_lower):
+        filters["work_mode"] = "hybrid"
+    elif re.search(r"\b(wfh|work from home|work-from-home)\b", t_lower):
+        filters["work_mode"] = "wfh"
+    elif re.search(r"\bremote\b", t_lower):
+        filters["work_mode"] = "remote"
+    elif re.search(r"\bon[-\s]?site\b|\bin[-\s]?office\b|\boffice\s+job\b", t_lower):
+        filters["work_mode"] = "office"
 
-    # --- Part-time ---
-    if re.search(r"part[\s-]*time|parttime", t_lower):
-        filters["parttime"] = "on"
+    # --- Employment type ---
+    if re.search(r"part[\s-]*time|parttime|\bpart\s+timer\b", t_lower):
+        filters["employment_type"] = "part_time"
+    elif re.search(r"\bfull[\s-]*time\b", t_lower):
+        filters["employment_type"] = "full_time"
 
     # --- Location: prefer spaCy GPE/LOC; take first non-overlapping ---
     loc_parts = []
@@ -243,9 +249,10 @@ def Extract_filter(transcript: str):
         if fb:
             filters["title"] = fb
 
-    # Remote-only utterances should not force a bogus title
-    if filters["remote"] == "on" and not title_hit:
-        if filters["title"].lower() in ("remote", "work from home", "wfh"):
+    # Work-mode-only utterances should not force a bogus title
+    if filters.get("work_mode") and not title_hit:
+        tonly = filters["title"].lower().strip()
+        if tonly in ("remote", "work from home", "wfh", "hybrid", "office", "work mode"):
             filters["title"] = ""
 
     return filters

@@ -1,4 +1,6 @@
 import os
+from urllib.parse import urlparse
+
 from dotenv import load_dotenv
 from search_nlp import Extract_filter
 
@@ -211,6 +213,7 @@ def Login_admin():
 @app.route("/Applicant/dashboard")
 def applicant_dashboard():
     if "username" in session and session["role"] == "applicant":
+        session.pop("job_filter_form", None)
         jobs = load_jobs_from_db()
         return render_template("applicant_dash.html", jobs=jobs, form_values=None)
     return redirect(url_for("Login_user"))
@@ -219,8 +222,12 @@ def applicant_dashboard():
 @app.route("/Admin/dashboard")
 def admin_dashboard():
     if "adm_name" in session and session["role"] == "admin":
-        job_titles = [job["title"] for job in get_applicants_count()]
-        apl_count_per_job = [job["Applicant_count"] for job in get_applicants_count()]
+        per_job = list(get_applicants_count())
+        # Disambiguate duplicate titles (multiple postings) for chart labels
+        job_titles = [
+            f'{j["title"]} · #{j["job_id"]}' for j in per_job
+        ]
+        apl_count_per_job = [j["Applicant_count"] for j in per_job]
 
         return render_template(
             "admin_dash.html",
@@ -366,19 +373,25 @@ def _merge_job_filters(form_dict, search_text):
     return merged
 
 
-# this route is for filter the job
-@app.route("/filter", methods=["POST"])
+# this route is for filter the job (POST/Redirect/GET so GET /filter is safe — no 405 on refresh)
+@app.route("/filter", methods=["GET", "POST"])
 def filter_job():
-    form = request.form.to_dict()
+    if request.method == "POST":
+        form = request.form.to_dict()
+        search_q = (form.get("search") or "").strip()
+        filter_list = _merge_job_filters(form, search_q)
+        session["job_filter_form"] = form
+        return redirect(url_for("filter_job"))
+
+    form = session.get("job_filter_form")
+    if not form:
+        return redirect(url_for("applicant_dashboard"))
     search_q = (form.get("search") or "").strip()
     filter_list = _merge_job_filters(form, search_q)
-
     jobs = load_filter_jobs_from_db(**filter_list)
     if not jobs:
         jobs = []
-    return render_template(
-        "applicant_dash.html", jobs=jobs, form_values=request.form
-    )
+    return render_template("applicant_dash.html", jobs=jobs, form_values=form)
 
 
 @app.route("/logout")
@@ -403,8 +416,19 @@ def api_job(id):
     return jsonify({"error": "Job not found"}), 404
 
 
+def _redirect_after_bookmark():
+    """POST-only routes (e.g. /filter) cannot be reopened via GET — avoid 405 on redirect."""
+    ref = request.referrer
+    if not ref:
+        return redirect(url_for("applicant_dashboard"))
+    path = urlparse(ref).path.rstrip("/") or "/"
+    if path == "/filter":
+        return redirect(url_for("saved_jobs"))
+    return redirect(ref)
+
+
 # Save Jobs or Book-Mark
-@app.route("/save-job/<int:job_id>")
+@app.route("/save-job/<int:job_id>", methods=["GET"])
 def save_job_route(job_id):
 
     if "username" not in session and "user_id" not in session:
@@ -415,7 +439,7 @@ def save_job_route(job_id):
 
     flash("Job Saved Successfully", "success")
 
-    return redirect(request.referrer)
+    return _redirect_after_bookmark()
 
 
 @app.route("/saved-jobs")
@@ -429,14 +453,14 @@ def saved_jobs():
     return render_template("saved_jobs.html", jobs=jobs)
 
 
-@app.route("/remove-saved/<int:job_id>")
+@app.route("/remove-saved/<int:job_id>", methods=["GET"])
 def remove_saved(job_id):
 
     remove_saved_job(session["user_id"], job_id)
 
     flash("Removed from Saved Jobs", "info")
 
-    return redirect(request.referrer)
+    return _redirect_after_bookmark()
 
 # ---------------- RUN ---------------- #
 

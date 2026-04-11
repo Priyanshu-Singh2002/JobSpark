@@ -73,7 +73,7 @@
         /* Adjust margin or float if needed */
     }
 
-    #save-btn {
+    .save-btn {
         background-color: #f91263e7;
         color: #fff;
         padding: 7px 16px 7px 5px;
@@ -86,6 +86,7 @@
     }
 </style>
 
+{% from 'macros/job_helpers.html' import experience_for_job %}
 <!-- job_item.html (example) -->
 {% for job in jobs %}
 <div class="job-card">
@@ -99,11 +100,17 @@
         </div>
     </div>
 
-    <!-- Middle row: Location, Experience, Salary -->
+    <!-- Middle row: Location, work mode, Experience, Salary -->
     <div class="job-meta">
         <span class="location">{{ job.location }}</span>
         <span class="dot">·</span>
-        <span class="experience">{{ job.requirements }}</span>
+        {% set wm = job.get('work_mode', 'office') %}
+        {% set et = job.get('employment_type', 'full_time') %}
+        <span class="job-mode" title="Work mode">{{ {'office': 'Office', 'remote': 'Remote', 'wfh': 'WFH', 'hybrid': 'Hybrid'}.get(wm, wm) }}</span>
+        <span class="dot">·</span>
+        <span class="job-emp" title="Employment">{{ 'Part-time' if et == 'part_time' else 'Full-time' }}</span>
+        <span class="dot">·</span>
+        <span class="job-exp" title="Experience required">{{ experience_for_job(job) }}</span>
         <span class="dot">·</span>
         <span class="salary">₹ {{ job.salary }}</span>
     </div>
@@ -112,7 +119,7 @@
     <div class="job-footer">
         <span class="posted-time">{{ job.posted_time or "Recently" }}</span>
         <a href="/jobs/{{ job.id }}" class="apply-btn">Apply</a>
-        <a href="/save-job/{{job.id}}" id="save-btn">
+        <a href="{{ url_for('save_job_route', job_id=job.id) }}" class="save-btn">
             ⭐ Save
         </a>
     </div>

@@ -56,8 +56,21 @@
             <input type="text" id="location" name="location" class="filter-input" placeholder="e.g. Delhi or Remote"
                 value="{{ fv.get('location', '') }}">
 
-            <label class="checkbox-row"><input type="checkbox" name="remote" value="on" {% if fv.get('remote') == 'on' %}checked{% endif %}> Work from home</label>
-            <label class="checkbox-row"><input type="checkbox" name="parttime" value="on" {% if fv.get('parttime') == 'on' %}checked{% endif %}> Part-time</label>
+            <label for="work_mode">Work mode</label>
+            <select id="work_mode" name="work_mode" class="filter-input">
+                <option value="" {% if not fv.get('work_mode') %}selected{% endif %}>Any</option>
+                <option value="office" {% if fv.get('work_mode') == 'office' %}selected{% endif %}>Office</option>
+                <option value="remote" {% if fv.get('work_mode') == 'remote' %}selected{% endif %}>Remote</option>
+                <option value="wfh" {% if fv.get('work_mode') == 'wfh' %}selected{% endif %}>WFH</option>
+                <option value="hybrid" {% if fv.get('work_mode') == 'hybrid' %}selected{% endif %}>Hybrid</option>
+            </select>
+
+            <label for="employment_type">Employment</label>
+            <select id="employment_type" name="employment_type" class="filter-input">
+                <option value="" {% if not fv.get('employment_type') %}selected{% endif %}>Any</option>
+                <option value="full_time" {% if fv.get('employment_type') == 'full_time' %}selected{% endif %}>Full-time</option>
+                <option value="part_time" {% if fv.get('employment_type') == 'part_time' %}selected{% endif %}>Part-time</option>
+            </select>
 
             <label for="salary">Minimum annual salary (₹ lakhs per year)</label>
             <div class="salary-row">
